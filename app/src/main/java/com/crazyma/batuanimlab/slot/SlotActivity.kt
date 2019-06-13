@@ -1,7 +1,8 @@
-package com.crazyma.batuanimlab
+package com.crazyma.batuanimlab.slot
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.crazyma.batuanimlab.R
 
 class SlotActivity: AppCompatActivity() {
 
