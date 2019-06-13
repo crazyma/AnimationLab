@@ -1,0 +1,31 @@
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Rotate. -->
+    <objectAnimator
+        android:duration="300"
+        android:interpolator="@android:interpolator/accelerate_decelerate"
+        android:propertyName="rotationY"
+        android:valueFrom="0"
+        android:valueTo="360"/>
+
+    <objectAnimator
+        android:duration="300"
+        android:interpolator="@android:interpolator/accelerate_decelerate"
+        android:propertyName="scaleX"
+        android:valueFrom="0.1"
+        android:valueTo="1"/>
+
+    <objectAnimator
+        android:duration="300"
+        android:interpolator="@android:interpolator/accelerate_decelerate"
+        android:propertyName="scaleY"
+        android:valueFrom="0.1"
+        android:valueTo="1"/>
+
+    <!-- Half-way through the rotation (see startOffset), set the alpha to 0. -->
+    <!--<objectAnimator-->
+        <!--android:duration="1"-->
+        <!--android:propertyName="alpha"-->
+        <!--android:startOffset="@integer/card_flip_duration_half"-->
+        <!--android:valueFrom="1.0"-->
+        <!--android:valueTo="0.0"/>-->
+</set>

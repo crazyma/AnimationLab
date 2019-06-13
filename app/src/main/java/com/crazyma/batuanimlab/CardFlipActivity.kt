@@ -1,5 +1,7 @@
 package com.crazyma.batuanimlab
 
+import android.animation.AnimatorInflater
+import android.animation.AnimatorSet
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -13,10 +15,13 @@ class CardFlipActivity : AppCompatActivity() {
     }
 
     fun buttonClicked(v: View){
+        launchAnim()
+    }
 
-        textView.animate().apply {
-            rotationY(360f)
-            duration = 1000
-        }.start()
+    private fun launchAnim(){
+        val showAnimation = AnimatorInflater.loadAnimator(this, R.animator.card_flip) as AnimatorSet
+        showAnimation.setTarget(textView)
+        showAnimation.start()
+
     }
 }
