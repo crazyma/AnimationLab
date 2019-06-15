@@ -14,6 +14,8 @@ class SlotFlyView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    private var widthSize = 0
+    private var heightSize = 0
     private var interval = 0
     private var iconHeight = 0
     private var iconWidth = 0
@@ -21,7 +23,12 @@ class SlotFlyView @JvmOverloads constructor(
     private var iconRight = 0
     private var startY = 0
 
-    private var currentValue = 0
+    private var quotient = 0
+    private var reminder = 0
+
+    private var currentValue = 525 + 525 + 525
+    private var firstIconPositionY = 0
+    private var secondIconPositionY = 0
 
     private var firstPaint: Paint = Paint().apply {
         isAntiAlias = true
@@ -37,8 +44,8 @@ class SlotFlyView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
-        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+        widthSize = MeasureSpec.getSize(widthMeasureSpec)
+        heightSize = MeasureSpec.getSize(heightMeasureSpec)
 
         interval = heightSize / 3
         iconHeight = 2 * interval
@@ -46,24 +53,52 @@ class SlotFlyView @JvmOverloads constructor(
         startY = interval / 2
         iconLeft = (widthSize - iconWidth) / 2
         iconRight = iconLeft + iconWidth
+
+        Log.i("badu","-------------")
+        Log.d("badu", "heightSize: $heightSize")
         Log.d("badu", "interval: $interval")
         Log.d("badu", "iconHeight: $iconHeight")
         Log.d("badu", "iconWidth: $iconWidth")
         Log.d("badu", "startY: $startY")
 
+        calculatePosition()
     }
-
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         canvas.drawRect(
             iconLeft.toFloat(),
-            startY.toFloat() + currentValue,
+            firstIconPositionY.toFloat(),
             iconRight.toFloat(),
-            (startY + iconHeight).toFloat() + currentValue,
-            firstPaint)
+            (firstIconPositionY + iconHeight).toFloat(),
+            firstPaint
+        )
+
+        canvas.drawRect(
+            iconLeft.toFloat(),
+            secondIconPositionY.toFloat(),
+            iconRight.toFloat(),
+            (secondIconPositionY + iconHeight).toFloat(),
+            secondPaint
+        )
     }
 
 
+    private fun calculatePosition() {
+
+        quotient = currentValue / heightSize
+        reminder = currentValue % heightSize
+
+        if (quotient % 2 == 0) {    //  even, mean: first on top
+            Log.v("badu","first on top")
+            firstIconPositionY = startY - reminder
+            secondIconPositionY = firstIconPositionY + iconHeight + interval
+        } else {                    //  odd, mean: second on top
+            Log.v("badu","second on top")
+            secondIconPositionY = startY - reminder
+            firstIconPositionY = secondIconPositionY + iconHeight + interval
+        }
+
+    }
 }
