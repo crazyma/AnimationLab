@@ -58,8 +58,8 @@ class SprinkleView @JvmOverloads constructor(
         canvas.drawBitmap(getBitmapFromVectorDrawable(R.drawable.ic_img_spark01), 100f, 100f, firstPaint)
 
         canvas.withTranslation {
-            translate(200f,200f)
-            rotate(45f,0f,0f)
+            translate(200f, 200f)
+            rotate(45f, 0f, 0f)
             vectorDrawable2.draw(this)
         }
 
