@@ -32,7 +32,7 @@ class SlotFlyView @JvmOverloads constructor(
         set(value) {
             field = value
             calculatePosition()
-            invalidate()
+            postInvalidate()
         }
 
     private var firstIconPositionY = 0
@@ -117,14 +117,12 @@ class SlotFlyView @JvmOverloads constructor(
         )
     }
 
-    fun startRolling() {
+    fun startRolling(delay: Long = 0L) {
         ValueAnimator.ofInt(0, maxValue).apply {
-            duration = 2000
+            duration = 2000 + delay
             interpolator = OvershootInterpolator(0.3f)
             addUpdateListener {
                 currentValue = it.animatedValue as Int
-                calculatePosition()
-                postInvalidate()
             }
         }.start()
     }
