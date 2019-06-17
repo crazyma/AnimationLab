@@ -2,13 +2,20 @@ package com.crazyma.batuanimlab.sprinkle
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Point
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import android.os.Build
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.VectorDrawable
+import androidx.core.graphics.withRotation
+import androidx.core.graphics.withTranslation
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.crazyma.batuanimlab.R
+
 
 class SprinkleView @JvmOverloads constructor(
     context: Context,
@@ -20,6 +27,17 @@ class SprinkleView @JvmOverloads constructor(
     val timePoints = mutableListOf<Point>()
     var xx = 0f
     var yy = 0f
+
+    var vectorDrawable2: VectorDrawableCompat =
+        VectorDrawableCompat.create(context.resources, R.drawable.ic_img_spark02, null)!!.apply {
+            setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN)
+            setBounds(0, 0, intrinsicWidth, intrinsicHeight)
+        }
+    var vectorDrawable3: VectorDrawableCompat =
+        VectorDrawableCompat.create(context.resources, R.drawable.ic_img_spark03, null)!!.apply {
+            setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
+            setBounds(0, 0, intrinsicWidth, intrinsicHeight)
+        }
 
     private var firstPaint: Paint = Paint().apply {
         isAntiAlias = true
@@ -37,9 +55,22 @@ class SprinkleView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawCircle(xx, yy, 20f, firstPaint)
+        canvas.drawBitmap(getBitmapFromVectorDrawable(R.drawable.ic_img_spark01), 100f, 100f, firstPaint)
+
+        canvas.withTranslation {
+            translate(200f,200f)
+            rotate(45f,0f,0f)
+            vectorDrawable2.draw(this)
+        }
+
+        canvas.withTranslation {
+            translate(300f, 300f)
+            vectorDrawable3.draw(this)
+        }
+
     }
 
-    fun runAnim(){
+    fun runAnim() {
         ValueAnimator.ofFloat(0f, 1f).apply {
             duration = 2000
             interpolator = LinearInterpolator()
@@ -55,7 +86,7 @@ class SprinkleView @JvmOverloads constructor(
     private fun createPoints(width: Int, height: Int) {
         points.apply {
             add(Point(0, 0))
-            add(Point(0,  height))
+            add(Point(0, height))
             add(Point(width, 0))
             add(Point(width, height))
         }
@@ -70,6 +101,23 @@ class SprinkleView @JvmOverloads constructor(
             timePoints.add(Point(x.toInt(), y.toInt()))
             t += 0.1f
         }
+    }
+
+    private fun getBitmapFromVectorDrawable(drawableId: Int): Bitmap {
+        var drawable = ContextCompat.getDrawable(context, drawableId)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            drawable = DrawableCompat.wrap(drawable!!).mutate()
+        }
+
+        val bitmap = Bitmap.createBitmap(
+            drawable!!.intrinsicWidth, drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+
+        return bitmap
     }
 
     private fun thirdLevelBézier(p0: Int, p1: Int, p2: Int, p3: Int, t: Float) =
