@@ -1,11 +1,13 @@
 package com.crazyma.batuanimlab.slot
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import android.view.animation.OvershootInterpolator
 import androidx.core.content.ContextCompat
 
 class SlotFlyView @JvmOverloads constructor(
@@ -26,9 +28,36 @@ class SlotFlyView @JvmOverloads constructor(
     private var quotient = 0
     private var reminder = 0
 
-    private var currentValue = 525 + 525 + 525
+    var currentValue = 0
+        set(value) {
+            field = value
+            calculatePosition()
+            invalidate()
+        }
+
     private var firstIconPositionY = 0
     private var secondIconPositionY = 0
+
+    private var colorList = listOf(
+        android.R.color.holo_green_light,
+        android.R.color.holo_blue_bright,
+        android.R.color.holo_orange_light,
+        android.R.color.holo_purple,
+        android.R.color.holo_green_light,
+        android.R.color.holo_blue_bright,
+        android.R.color.holo_orange_light,
+        android.R.color.holo_purple,
+        android.R.color.holo_green_light,
+        android.R.color.holo_blue_bright,
+        android.R.color.holo_orange_light,
+        android.R.color.holo_purple,
+        android.R.color.holo_green_light,
+        android.R.color.holo_blue_bright,
+        android.R.color.holo_orange_light,
+        android.R.color.holo_purple
+    )
+
+    private var maxValue = 0
 
     private var firstPaint: Paint = Paint().apply {
         isAntiAlias = true
@@ -54,12 +83,16 @@ class SlotFlyView @JvmOverloads constructor(
         iconLeft = (widthSize - iconWidth) / 2
         iconRight = iconLeft + iconWidth
 
-        Log.i("badu","-------------")
+        maxValue = (colorList.size - 1) * heightSize
+
+        Log.i("badu", "-------------")
         Log.d("badu", "heightSize: $heightSize")
         Log.d("badu", "interval: $interval")
         Log.d("badu", "iconHeight: $iconHeight")
         Log.d("badu", "iconWidth: $iconWidth")
         Log.d("badu", "startY: $startY")
+        Log.d("badu", "maxValue: $maxValue")
+        Log.d("badu", "currentValue: $currentValue")
 
         calculatePosition()
     }
@@ -84,21 +117,39 @@ class SlotFlyView @JvmOverloads constructor(
         )
     }
 
+    fun startRolling() {
+        ValueAnimator.ofInt(0, maxValue).apply {
+            duration = 2000
+            interpolator = OvershootInterpolator(0.3f)
+            addUpdateListener {
+                currentValue = it.animatedValue as Int
+                calculatePosition()
+                postInvalidate()
+            }
+        }.start()
+    }
+
 
     private fun calculatePosition() {
-
         quotient = currentValue / heightSize
         reminder = currentValue % heightSize
 
         if (quotient % 2 == 0) {    //  even, mean: first on top
-            Log.v("badu","first on top")
             firstIconPositionY = startY - reminder
             secondIconPositionY = firstIconPositionY + iconHeight + interval
+
+            firstPaint.color = ContextCompat.getColor(context, getColor(quotient))
+            secondPaint.color = ContextCompat.getColor(context, getColor(quotient + 1))
         } else {                    //  odd, mean: second on top
-            Log.v("badu","second on top")
             secondIconPositionY = startY - reminder
             firstIconPositionY = secondIconPositionY + iconHeight + interval
-        }
 
+            secondPaint.color = ContextCompat.getColor(context, getColor(quotient))
+            firstPaint.color = ContextCompat.getColor(context, getColor(quotient + 1))
+        }
     }
+
+    private fun getColor(index: Int) =
+        if (index >= 0 && index < colorList.size) colorList[index]
+        else android.R.color.transparent
 }
