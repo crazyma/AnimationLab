@@ -96,10 +96,9 @@ class SprinkleView2 @JvmOverloads constructor(
                     }
                 }
 
-                //  起點可以超過視窗
-                val birthX = (Math.random() * width * 1.4 - width * 0.2).toFloat()
+                val birthX = (Math.random() * width * 0.5 + width * 0.25).toFloat()
                 val birthY = -100f
-                val deathX = (Math.random() * width * 1.4 - width * 0.2).toFloat()
+                val deathX = (Math.random() * width * 1.5 - width * 0.25).toFloat()
                 val deathY = height.toFloat() + 100f
                 val p1X = if (i % 2 == 0) 0f else width.toFloat()
                 val p1Y = height / 2f
