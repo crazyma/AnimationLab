@@ -73,7 +73,7 @@ class SprinkleView2 @JvmOverloads constructor(
 
     private fun generateObject(): List<SprinkleObject> {
         return mutableListOf<SprinkleObject>().apply {
-            for (i in 0..120) {
+            for (i in 0..150) {
 
                 val drawable = when (i % 3) {
                     0 -> {

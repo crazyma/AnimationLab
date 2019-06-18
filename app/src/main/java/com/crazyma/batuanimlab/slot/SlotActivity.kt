@@ -8,8 +8,6 @@ import kotlinx.android.synthetic.main.activity_slot.*
 
 class SlotActivity : AppCompatActivity() {
 
-    private var value = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_slot)
