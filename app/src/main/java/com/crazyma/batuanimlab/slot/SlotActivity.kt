@@ -24,8 +24,8 @@ class SlotActivity : AppCompatActivity() {
     fun buttonClicked(v: View) {
 
         slotFlyView1.startRolling()
-        slotFlyView2.startRolling(200)
-        slotFlyView3.startRolling(400)
+//        slotFlyView2.startRolling(200)
+//        slotFlyView3.startRolling(400)
 
     }
 
