@@ -11,6 +11,14 @@ class SlotActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_slot)
+
+        val list = listOf(
+            R.drawable.img_slot_card,
+            R.drawable.img_nexttime,
+            R.drawable.img_tryagain
+        )
+
+        slotFlyView1.drawableResIds = list
     }
 
     fun buttonClicked(v: View) {
