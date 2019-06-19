@@ -21,6 +21,8 @@ class SlotFlyView @JvmOverloads constructor(
 
     companion object {
         const val DURATION_DEFAULT = 2
+        const val DURATION_FIRST_LONG = 4
+        const val DURATION_SECOND_LONG = 6
     }
 
     private var widthSize = 0
@@ -105,9 +107,9 @@ class SlotFlyView @JvmOverloads constructor(
         }
     }
 
-    fun startRolling(delay: Long = 0L) {
+    fun startRolling() {
         ValueAnimator.ofInt(0, maxAnimationValue).apply {
-            duration = (this@SlotFlyView.duration + delay) * 1000
+            duration = this@SlotFlyView.duration * 1000L
             interpolator = OvershootInterpolator(0.3f)
             addUpdateListener {
                 currentValue = it.animatedValue as Int
