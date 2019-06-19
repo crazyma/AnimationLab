@@ -20,7 +20,8 @@ class SprinkleView2 @JvmOverloads constructor(
 
 
     companion object {
-        const val BIRTH_TIME_INTERVAL = 10000
+        const val BIRTH_TIME_INTERVAL_FIRST = 5000
+        const val BIRTH_TIME_INTERVAL_WHOLE = 10000
         const val ANIM_DURATION_INTERVAL = 5000
         const val ANIM_DURATION_MIN = 5000
     }
@@ -73,7 +74,8 @@ class SprinkleView2 @JvmOverloads constructor(
 
     private fun generateObject(): List<SprinkleObject> {
         return mutableListOf<SprinkleObject>().apply {
-            for (i in 0..150) {
+            val count = 150
+            for (i in 0..count) {
 
                 val drawable = when (i % 3) {
                     0 -> {
@@ -96,14 +98,18 @@ class SprinkleView2 @JvmOverloads constructor(
                     }
                 }
 
+                val birthTimeInterval = when {
+                    i < count / 2 -> BIRTH_TIME_INTERVAL_FIRST
+                    else -> BIRTH_TIME_INTERVAL_WHOLE
+                }
                 val birthX = (Math.random() * width * 0.5 + width * 0.25).toFloat()
                 val birthY = -100f
                 val deathX = (Math.random() * width * 1.5 - width * 0.25).toFloat()
                 val deathY = height.toFloat() + 100f
                 val p1X = if (i % 2 == 0) 0f else width.toFloat()
                 val p1Y = height / 2f
-                val rotateDegree = (Math.random()).toFloat()
-                val birthTime = (BIRTH_TIME_INTERVAL * Math.random()).toInt()
+                val rotateDegree = (Math.random()).toFloat() * 0.5f
+                val birthTime = (birthTimeInterval * Math.random()).toInt()
                 val deathTime = birthTime + ANIM_DURATION_MIN + (ANIM_DURATION_INTERVAL * Math.random()).toInt()
 
                 val sprinkleObject = SprinkleObject(
