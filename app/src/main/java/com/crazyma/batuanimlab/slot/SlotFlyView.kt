@@ -1,11 +1,14 @@
 package com.crazyma.batuanimlab.slot
 
+import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
+import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
 
 /**
@@ -108,13 +111,33 @@ class SlotFlyView @JvmOverloads constructor(
     }
 
     fun startRolling() {
-        ValueAnimator.ofInt(0, maxAnimationValue).apply {
-            duration = this@SlotFlyView.duration * 1000L
-            interpolator = OvershootInterpolator(0.3f)
-            addUpdateListener {
-                currentValue = it.animatedValue as Int
-            }
-        }.start()
+        Log.d("badu", "duration : ${this@SlotFlyView.duration}, maxAnimationValue: $maxAnimationValue")
+
+        val remainDuration = (this@SlotFlyView.duration - DURATION_DEFAULT).let { if (it <= 0) 0 else it }
+
+        val animatorSet = AnimatorSet().apply {
+            playSequentially(
+//                ValueAnimator.ofInt(0, maxAnimationValue).apply {
+//                    duration = remainDuration * 1000L
+//                    interpolator = LinearInterpolator()
+//                    addUpdateListener {
+//                        currentValue = it.animatedValue as Int
+//                    }
+//                }
+
+                ValueAnimator.ofInt(0, maxAnimationValue).apply {
+                    duration = DURATION_DEFAULT * 1000L
+                    interpolator = OvershootInterpolator(0.3f)
+                    addUpdateListener {
+                        currentValue = it.animatedValue as Int
+                    }
+                }
+                )
+        }
+
+        animatorSet.start()
+
+
     }
 
     private fun calculatePosition() {
