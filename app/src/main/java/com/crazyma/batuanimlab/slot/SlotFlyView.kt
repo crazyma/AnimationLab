@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
@@ -23,9 +22,15 @@ class SlotFlyView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     companion object {
-        const val DURATION_DEFAULT = 2
-        const val DURATION_FIRST_LONG = 4
-        const val DURATION_SECOND_LONG = 6
+
+        const val DURATION_PROGRESS_ONE = 1
+        const val DURATION_PROGRESS_TWO = 3
+        const val DURATION_PROGRESS_THREE = 5
+        const val DURATION_END = 2
+
+        const val SLOT_INDEX_ONE = 0
+        const val SLOT_INDEX_TWO = 1
+        const val SLOT_INDEX_THREE = 2
     }
 
     private var widthSize = 0
@@ -40,10 +45,14 @@ class SlotFlyView @JvmOverloads constructor(
     private var quotient = 0
     private var reminder = 0
 
-    //  second
-    var duration = DURATION_DEFAULT
+    var slotIndex = SLOT_INDEX_ONE
         set(value) {
             field = value
+            progressDuration = when (value) {
+                SLOT_INDEX_TWO -> DURATION_PROGRESS_TWO
+                SLOT_INDEX_THREE -> DURATION_PROGRESS_THREE
+                else -> DURATION_PROGRESS_ONE
+            }
             generateOrder()
         }
 
@@ -54,6 +63,9 @@ class SlotFlyView @JvmOverloads constructor(
             generateOrder()
         }
 
+    private var progressIconCount = 0
+    private var endIconCount = 0
+    private var progressDuration = DURATION_PROGRESS_ONE
     private var firstIconPositionY = 0
     private var secondIconPositionY = 0
     private var currentValue = 0
@@ -68,7 +80,8 @@ class SlotFlyView @JvmOverloads constructor(
     private var firstVisibleDrawable: Drawable? = null
     private var secondVisibleDrawable: Drawable? = null
 
-    private var maxAnimationValue = 0
+    private var maxProgressAnimValue = 0
+    private var maxEndAnimValue = 0
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -83,15 +96,6 @@ class SlotFlyView @JvmOverloads constructor(
         iconRight = iconLeft + iconWidth
 
         calculateMaxAnimationValue()
-
-//        Log.i("badu", "-------------")
-//        Log.d("badu", "heightSize: $heightSize")
-//        Log.d("badu", "interval: $interval")
-//        Log.d("badu", "iconHeight: $iconHeight")
-//        Log.d("badu", "iconWidth: $iconWidth")
-//        Log.d("badu", "startY: $startY")
-//        Log.d("badu", "maxAnimationValue: $maxAnimationValue")
-//        Log.d("badu", "currentValue: $currentValue")
 
         calculatePosition()
     }
@@ -111,37 +115,29 @@ class SlotFlyView @JvmOverloads constructor(
     }
 
     fun startRolling() {
-        Log.d("badu", "duration : ${this@SlotFlyView.duration}, maxAnimationValue: $maxAnimationValue")
-
-        val remainDuration = (this@SlotFlyView.duration - DURATION_DEFAULT).let { if (it <= 0) 0 else it }
-
         val animatorSet = AnimatorSet().apply {
             playSequentially(
-//                ValueAnimator.ofInt(0, maxAnimationValue).apply {
-//                    duration = remainDuration * 1000L
-//                    interpolator = LinearInterpolator()
-//                    addUpdateListener {
-//                        currentValue = it.animatedValue as Int
-//                    }
-//                }
-
-                ValueAnimator.ofInt(0, maxAnimationValue).apply {
-                    duration = DURATION_DEFAULT * 1000L
+                ValueAnimator.ofInt(0, maxProgressAnimValue).apply {
+                    duration = progressDuration * 1000L
+                    interpolator = LinearInterpolator()
+                    addUpdateListener {
+                        currentValue = it.animatedValue as Int
+                    }
+                },
+                ValueAnimator.ofInt(maxProgressAnimValue, maxEndAnimValue + maxProgressAnimValue).apply {
+                    duration = DURATION_END * 1000L
                     interpolator = OvershootInterpolator(0.3f)
                     addUpdateListener {
                         currentValue = it.animatedValue as Int
                     }
                 }
-                )
+            )
         }
 
         animatorSet.start()
-
-
     }
 
     private fun calculatePosition() {
-
         quotient = currentValue / heightSize
         reminder = currentValue % heightSize
 
@@ -169,14 +165,26 @@ class SlotFlyView @JvmOverloads constructor(
 
     private fun generateOrder() {
         if (drawables.size > 0) {
-            val totalIconsCount = (duration * 10 / drawables.size) * drawables.size
             val indexList = mutableListOf<Int>()
-            for (i in 0 until totalIconsCount) {
-                indexList.add(i % drawables.size)
-            }
+            generateProgressOrder(indexList)
+            generateEndOrder(indexList)
 
             this.indexList = indexList
             calculateMaxAnimationValue()
+        }
+    }
+
+    private fun generateProgressOrder(indexList: MutableList<Int>) {
+        progressIconCount = (progressDuration * 25 / drawables.size) * drawables.size
+        for (i in 0 until progressIconCount) {
+            indexList.add(i % drawables.size)
+        }
+    }
+
+    private fun generateEndOrder(indexList: MutableList<Int>) {
+        endIconCount = (DURATION_END * 10 / drawables.size) * drawables.size
+        for (i in 0 until endIconCount) {
+            indexList.add(i % drawables.size)
         }
     }
 
@@ -193,9 +201,13 @@ class SlotFlyView @JvmOverloads constructor(
     }
 
     private fun calculateMaxAnimationValue() {
-        maxAnimationValue = indexList?.run {
-            if (isEmpty()) 0
-            else (size - 1) * heightSize
-        } ?: 0
+        maxProgressAnimValue = heightSize * when (progressIconCount) {
+            0 -> 0
+            else -> progressIconCount - 1
+        }
+        maxEndAnimValue = heightSize * when (endIconCount) {
+            0 -> 0
+            else -> endIconCount - 1
+        }
     }
 }

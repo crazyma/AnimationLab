@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.crazyma.batuanimlab.R
-import com.crazyma.batuanimlab.slot.SlotFlyView.Companion.DURATION_FIRST_LONG
-import com.crazyma.batuanimlab.slot.SlotFlyView.Companion.DURATION_SECOND_LONG
+import com.crazyma.batuanimlab.slot.SlotFlyView.Companion.SLOT_INDEX_THREE
+import com.crazyma.batuanimlab.slot.SlotFlyView.Companion.SLOT_INDEX_TWO
 import kotlinx.android.synthetic.main.activity_slot.*
 
 class SlotActivity : AppCompatActivity() {
@@ -23,11 +23,11 @@ class SlotActivity : AppCompatActivity() {
         slotFlyView1.drawableResIds = list
         slotFlyView2.apply {
             drawableResIds = list
-            duration = DURATION_FIRST_LONG
+            slotIndex = SLOT_INDEX_TWO
         }
         slotFlyView3.apply {
             drawableResIds = list
-            duration = DURATION_SECOND_LONG
+            slotIndex = SLOT_INDEX_THREE
         }
 
     }
