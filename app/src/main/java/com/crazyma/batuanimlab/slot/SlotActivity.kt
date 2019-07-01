@@ -20,19 +20,27 @@ class SlotActivity : AppCompatActivity() {
             R.drawable.img_tryagain
         )
 
-        slotFlyView1.drawableResIds = list
+        slotFlyView1.apply {
+            drawableResIds = list
+            endDrawableIndex = 2
+
+        }
         slotFlyView2.apply {
             drawableResIds = list
             slotIndex = SLOT_INDEX_TWO
+            endDrawableIndex = 1
         }
         slotFlyView3.apply {
             drawableResIds = list
             slotIndex = SLOT_INDEX_THREE
+            endDrawableIndex = 2
         }
-
     }
 
     fun buttonClicked(v: View) {
+        slotFlyView1.endDrawableIndex = (Math.random() * 3).toInt()
+        slotFlyView2.endDrawableIndex = (Math.random() * 3).toInt()
+        slotFlyView3.endDrawableIndex = (Math.random() * 3).toInt()
 
         slotFlyView1.startRolling()
         slotFlyView2.startRolling()

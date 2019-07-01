@@ -12,8 +12,6 @@ import android.view.animation.OvershootInterpolator
 
 /**
  * 10 icon per second
- *
- *
  */
 class SlotFlyView @JvmOverloads constructor(
     context: Context,
@@ -24,8 +22,8 @@ class SlotFlyView @JvmOverloads constructor(
     companion object {
 
         const val DURATION_PROGRESS_ONE = 1
-        const val DURATION_PROGRESS_TWO = 3
-        const val DURATION_PROGRESS_THREE = 5
+        const val DURATION_PROGRESS_TWO = 2
+        const val DURATION_PROGRESS_THREE = 3
         const val DURATION_END = 2
 
         const val SLOT_INDEX_ONE = 0
@@ -60,6 +58,12 @@ class SlotFlyView @JvmOverloads constructor(
         set(value) {
             field = value
             generateDrawables()
+            generateOrder()
+        }
+
+    var endDrawableIndex = 0
+        set(value) {
+            field = value
             generateOrder()
         }
 
@@ -115,6 +119,7 @@ class SlotFlyView @JvmOverloads constructor(
     }
 
     fun startRolling() {
+
         val animatorSet = AnimatorSet().apply {
             playSequentially(
                 ValueAnimator.ofInt(0, maxProgressAnimValue).apply {
@@ -182,10 +187,18 @@ class SlotFlyView @JvmOverloads constructor(
     }
 
     private fun generateEndOrder(indexList: MutableList<Int>) {
+
+        if (endDrawableIndex < 0 || endDrawableIndex >= drawables.size)
+            endDrawableIndex = 0
+
         endIconCount = (DURATION_END * 10 / drawables.size) * drawables.size
+        val list = mutableListOf<Int>()
         for (i in 0 until endIconCount) {
-            indexList.add(i % drawables.size)
+            list.add((endDrawableIndex + i) % drawables.size)
         }
+        list.reverse()
+
+        indexList.addAll(list)
     }
 
     private fun getVisibleDrawable(index: Int): Drawable? {
@@ -203,7 +216,7 @@ class SlotFlyView @JvmOverloads constructor(
     private fun calculateMaxAnimationValue() {
         maxProgressAnimValue = heightSize * when (progressIconCount) {
             0 -> 0
-            else -> progressIconCount - 1
+            else -> progressIconCount
         }
         maxEndAnimValue = heightSize * when (endIconCount) {
             0 -> 0
