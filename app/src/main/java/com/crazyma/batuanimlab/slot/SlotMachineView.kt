@@ -3,14 +3,15 @@ package com.crazyma.batuanimlab.slot
 import android.content.Context
 import android.os.Handler
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
+import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.crazyma.batuanimlab.R
 import com.crazyma.batuanimlab.slot.SlotFlyView.Companion.SLOT_INDEX_ONE
 import com.crazyma.batuanimlab.slot.SlotFlyView.Companion.SLOT_INDEX_THREE
 import com.crazyma.batuanimlab.slot.SlotFlyView.Companion.SLOT_INDEX_TWO
 import kotlinx.android.synthetic.main.layout_slot_machine.view.*
+import java.util.*
 
 class SlotMachineView @JvmOverloads constructor(
     context: Context,
@@ -24,42 +25,31 @@ class SlotMachineView @JvmOverloads constructor(
         R.drawable.img_tryagain
     )
 
+    private var timer: Timer? = null
 
+    private var slotViewWidth = 0
+    private var slotViewMarginTop = 0
+    private var leftSlotViewMarginStart = 0
+    private var centerSlotViewMarginStart = 0
+    private var rightSlotViewMarginStart = 0
 
     init {
         LayoutInflater.from(context).inflate(R.layout.layout_slot_machine, this, true)
-
-        leftSlotView.apply {
-            drawableResIds = list
-            slotIndex = SLOT_INDEX_ONE
-            endDrawableIndex = 2
-
-        }
-        centerSlotView.apply {
-            drawableResIds = list
-            slotIndex = SLOT_INDEX_TWO
-            endDrawableIndex = 1
-        }
-        rightSlotView.apply {
-            drawableResIds = list
-            slotIndex = SLOT_INDEX_THREE
-            endDrawableIndex = 2
-        }
+        setupSlotViews()
+        startLightAnimation()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        Log.i("badu", "w : $w , h : $h")
 
-        val slotViewWidth = (w * 68f / 360f).toInt()
-        Log.i("badu", "slotViewWidth: $slotViewWidth")
+        slotViewWidth = (w * 68f / 360f).toInt()
 
-        val slotViewMarginTop = (w * 0.215f).toInt()
-        val leftSlotViewMarginStart = (w * 0.20f).toInt()
-        val centerSlotViewMarginStart = (w * 0.395f).toInt()
-        val rightSlotViewMarginStart = (w * 0.59f).toInt()
+        slotViewMarginTop = (w * 0.215f).toInt()
+        leftSlotViewMarginStart = (w * 0.20f).toInt()
+        centerSlotViewMarginStart = (w * 0.395f).toInt()
+        rightSlotViewMarginStart = (w * 0.59f).toInt()
 
-        Handler().postDelayed({
+        Handler().post {
             (leftSlotView.layoutParams as LayoutParams).apply {
                 width = slotViewWidth
                 height = slotViewWidth
@@ -83,14 +73,68 @@ class SlotMachineView @JvmOverloads constructor(
             }.let {
                 rightSlotView.layoutParams = it
             }
-
-        }, 0)
+        }
     }
 
-    fun startRolling(){
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        startLightAnimation()
+    }
+
+    override fun onDetachedFromWindow() {
+        endLightAnimation()
+        super.onDetachedFromWindow()
+    }
+
+    fun startRolling() {
         leftSlotView.startRolling()
         centerSlotView.startRolling()
         rightSlotView.startRolling()
+    }
+
+    private fun setupSlotViews() {
+        leftSlotView.apply {
+            drawableResIds = list
+            slotIndex = SLOT_INDEX_ONE
+            endDrawableIndex = 2
+
+        }
+        centerSlotView.apply {
+            drawableResIds = list
+            slotIndex = SLOT_INDEX_TWO
+            endDrawableIndex = 1
+        }
+        rightSlotView.apply {
+            drawableResIds = list
+            slotIndex = SLOT_INDEX_THREE
+            endDrawableIndex = 2
+        }
+    }
+
+    private fun startLightAnimation() {
+        timer?.cancel()
+        timer = Timer().apply {
+            schedule(object : TimerTask() {
+                override fun run() {
+                    findViewById<ImageView>(R.id.slotLightImageView)?.apply {
+                        tag = when (tag) {
+                            true -> {
+                                setImageResource(R.drawable.img_slot_light01)
+                                false
+                            }
+                            else -> {
+                                setImageResource(R.drawable.img_slot_light02)
+                                true
+                            }
+                        }
+                    }
+                }
+            }, 500, 500)
+        }
+    }
+
+    private fun endLightAnimation() {
+        timer?.cancel()
     }
 
 }

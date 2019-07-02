@@ -151,6 +151,8 @@ class SlotFlyView @JvmOverloads constructor(
     }
 
     private fun calculatePosition() {
+        if(heightSize == 0) return
+
         quotient = currentValue / heightSize
         reminder = currentValue % heightSize
 
