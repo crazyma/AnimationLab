@@ -1,6 +1,7 @@
 package com.crazyma.batuanimlab.slot
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.crazyma.batuanimlab.R
@@ -38,13 +39,16 @@ class SlotActivity : AppCompatActivity() {
     }
 
     fun buttonClicked(v: View) {
-        slotFlyView1.endDrawableIndex = (Math.random() * 3).toInt()
-        slotFlyView2.endDrawableIndex = (Math.random() * 3).toInt()
-        slotFlyView3.endDrawableIndex = (Math.random() * 3).toInt()
+//        slotFlyView1.endDrawableIndex = (Math.random() * 3).toInt()
+//        slotFlyView2.endDrawableIndex = (Math.random() * 3).toInt()
+//        slotFlyView3.endDrawableIndex = (Math.random() * 3).toInt()
+//
+//        slotFlyView1.startRolling()
+//        slotFlyView2.startRolling()
+//        slotFlyView3.startRolling()
 
-        slotFlyView1.startRolling()
-        slotFlyView2.startRolling()
-        slotFlyView3.startRolling()
+        Log.d("badu","slotMachineView width : ${slotMachineView.width} , height : ${slotMachineView.height}")
+//        Log.d("badu","view 2 width : ${view2.width} , height : ${view2.height}")
 
     }
 

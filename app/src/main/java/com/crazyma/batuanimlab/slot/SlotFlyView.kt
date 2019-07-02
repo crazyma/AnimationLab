@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
@@ -92,6 +93,8 @@ class SlotFlyView @JvmOverloads constructor(
         widthSize = MeasureSpec.getSize(widthMeasureSpec)
         heightSize = MeasureSpec.getSize(heightMeasureSpec)
 
+        Log.v("badu","SlotFlyView : widthSize: $widthSize , heightSize: $heightSize")
+
         interval = heightSize / 3
         iconHeight = 2 * interval
         iconWidth = iconHeight
@@ -102,6 +105,11 @@ class SlotFlyView @JvmOverloads constructor(
         calculateMaxAnimationValue()
 
         calculatePosition()
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        Log.v("badu","SlotFlyView : w: $w , h: $h")
     }
 
     override fun onDraw(canvas: Canvas) {
