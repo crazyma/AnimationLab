@@ -50,6 +50,8 @@ class SlotActivity : AppCompatActivity() {
         Log.d("badu","slotMachineView width : ${slotMachineView.width} , height : ${slotMachineView.height}")
 //        Log.d("badu","view 2 width : ${view2.width} , height : ${view2.height}")
 
+        slotMachineView.startRolling()
+
     }
 
 }

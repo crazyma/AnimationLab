@@ -59,11 +59,24 @@
         app:srcCompat="@drawable/img_slot_handle"
         tools:ignore="contentDescription" />
 
-    <View
+    <com.crazyma.batuanimlab.slot.SlotFlyView
         android:id="@+id/centerSlotView"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:background="#88000000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.crazyma.batuanimlab.slot.SlotFlyView
+        android:id="@+id/leftSlotView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.crazyma.batuanimlab.slot.SlotFlyView
+        android:id="@+id/rightSlotView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
