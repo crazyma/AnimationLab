@@ -35,19 +35,21 @@ class SlotMachineView @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
         Log.i("badu", "w : $w , h : $h")
 
-        val slotViewWidth = (w * 60f / 360f).toInt()
-        Log.i("badu","slotViewWidth: $slotViewWidth")
+        val slotViewWidth = (w * 68f / 360f).toInt()
+        Log.i("badu", "slotViewWidth: $slotViewWidth")
+
+        val slotViewMarginTop = (w * 0.215f).toInt()
+        val firstSlotViewMarginStart = (w * 0.20f).toInt()
 
         Handler().postDelayed({
-            (centerSlotView.layoutParams as ConstraintLayout.LayoutParams).apply {
+            (centerSlotView.layoutParams as LayoutParams).apply {
                 width = slotViewWidth
                 height = slotViewWidth
+                setMargins(firstSlotViewMarginStart, slotViewMarginTop, 0, 0)
             }.let {
                 centerSlotView.layoutParams = it
             }
-        },100)
-
-
+        }, 0)
 
 
     }
