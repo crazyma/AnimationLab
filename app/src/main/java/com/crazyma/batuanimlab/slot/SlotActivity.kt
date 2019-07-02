@@ -37,6 +37,10 @@ class SlotActivity : AppCompatActivity() {
             slotIndex = SLOT_INDEX_THREE
             endDrawableIndex = 2
         }
+
+        Handler().postDelayed({
+            slotMachineView.setupSlotViews()
+        },2000)
     }
 
     fun buttonClicked(v: View) {

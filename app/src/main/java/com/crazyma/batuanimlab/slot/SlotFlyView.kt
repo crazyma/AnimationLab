@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
@@ -88,12 +87,10 @@ class SlotFlyView @JvmOverloads constructor(
     private var maxProgressAnimValue = 0
     private var maxEndAnimValue = 0
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        widthSize = MeasureSpec.getSize(widthMeasureSpec)
-        heightSize = MeasureSpec.getSize(heightMeasureSpec)
-
-        Log.v("badu","SlotFlyView : widthSize: $widthSize , heightSize: $heightSize")
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        widthSize = w
+        heightSize = h
 
         interval = heightSize / 3
         iconHeight = 2 * interval
@@ -105,11 +102,6 @@ class SlotFlyView @JvmOverloads constructor(
         calculateMaxAnimationValue()
 
         calculatePosition()
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        Log.v("badu","SlotFlyView : w: $w , h: $h")
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -124,6 +116,10 @@ class SlotFlyView @JvmOverloads constructor(
             setBounds(iconLeft, secondIconPositionY, iconRight, (secondIconPositionY + iconHeight))
             draw(canvas)
         }
+    }
+
+    fun initPosition(){
+        currentValue = 0
     }
 
     fun startRolling() {
@@ -151,7 +147,7 @@ class SlotFlyView @JvmOverloads constructor(
     }
 
     private fun calculatePosition() {
-        if(heightSize == 0) return
+        if (heightSize == 0) return
 
         quotient = currentValue / heightSize
         reminder = currentValue % heightSize

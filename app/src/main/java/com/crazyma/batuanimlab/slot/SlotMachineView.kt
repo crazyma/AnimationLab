@@ -35,7 +35,7 @@ class SlotMachineView @JvmOverloads constructor(
 
     init {
         LayoutInflater.from(context).inflate(R.layout.layout_slot_machine, this, true)
-        setupSlotViews()
+//        setupSlotViews()
         startLightAnimation()
     }
 
@@ -50,29 +50,7 @@ class SlotMachineView @JvmOverloads constructor(
         rightSlotViewMarginStart = (w * 0.59f).toInt()
 
         Handler().post {
-            (leftSlotView.layoutParams as LayoutParams).apply {
-                width = slotViewWidth
-                height = slotViewWidth
-                setMargins(leftSlotViewMarginStart, slotViewMarginTop, 0, 0)
-            }.let {
-                leftSlotView.layoutParams = it
-            }
-
-            (centerSlotView.layoutParams as LayoutParams).apply {
-                width = slotViewWidth
-                height = slotViewWidth
-                setMargins(centerSlotViewMarginStart, slotViewMarginTop, 0, 0)
-            }.let {
-                centerSlotView.layoutParams = it
-            }
-
-            (rightSlotView.layoutParams as LayoutParams).apply {
-                width = slotViewWidth
-                height = slotViewWidth
-                setMargins(rightSlotViewMarginStart, slotViewMarginTop, 0, 0)
-            }.let {
-                rightSlotView.layoutParams = it
-            }
+            adjustSlotViewPosition()
         }
     }
 
@@ -92,22 +70,50 @@ class SlotMachineView @JvmOverloads constructor(
         rightSlotView.startRolling()
     }
 
-    private fun setupSlotViews() {
+    private fun adjustSlotViewPosition() {
+        (leftSlotView.layoutParams as LayoutParams).apply {
+            width = slotViewWidth
+            height = slotViewWidth
+            setMargins(leftSlotViewMarginStart, slotViewMarginTop, 0, 0)
+        }.let {
+            leftSlotView.layoutParams = it
+        }
+
+        (centerSlotView.layoutParams as LayoutParams).apply {
+            width = slotViewWidth
+            height = slotViewWidth
+            setMargins(centerSlotViewMarginStart, slotViewMarginTop, 0, 0)
+        }.let {
+            centerSlotView.layoutParams = it
+        }
+
+        (rightSlotView.layoutParams as LayoutParams).apply {
+            width = slotViewWidth
+            height = slotViewWidth
+            setMargins(rightSlotViewMarginStart, slotViewMarginTop, 0, 0)
+        }.let {
+            rightSlotView.layoutParams = it
+        }
+    }
+
+    fun setupSlotViews() {
         leftSlotView.apply {
             drawableResIds = list
             slotIndex = SLOT_INDEX_ONE
             endDrawableIndex = 2
-
+            initPosition()
         }
         centerSlotView.apply {
             drawableResIds = list
             slotIndex = SLOT_INDEX_TWO
             endDrawableIndex = 1
+            initPosition()
         }
         rightSlotView.apply {
             drawableResIds = list
             slotIndex = SLOT_INDEX_THREE
             endDrawableIndex = 2
+            initPosition()
         }
     }
 
