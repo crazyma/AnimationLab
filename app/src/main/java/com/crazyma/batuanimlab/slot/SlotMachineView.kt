@@ -1,9 +1,13 @@
 package com.crazyma.batuanimlab.slot
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Rect
 import android.os.Handler
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.crazyma.batuanimlab.R
@@ -19,19 +23,27 @@ class SlotMachineView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
+    interface OnStickClickListener {
+        fun onStickClicked()
+    }
+
     val list = listOf(
         R.drawable.img_slot_card,
         R.drawable.img_nexttime,
         R.drawable.img_tryagain
     )
 
-    private var timer: Timer? = null
+    var stickClickListener: OnStickClickListener? = null
 
+    private var timer: Timer? = null
+    private var stickTouched = false
     private var slotViewWidth = 0
     private var slotViewMarginTop = 0
     private var leftSlotViewMarginStart = 0
     private var centerSlotViewMarginStart = 0
     private var rightSlotViewMarginStart = 0
+    private var stickerRect = Rect()
+
 
     init {
         LayoutInflater.from(context).inflate(R.layout.layout_slot_machine, this, true)
@@ -41,6 +53,14 @@ class SlotMachineView @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
+        //  20%
+        // 85% 95%
+        // 60%
+
+        stickerRect = Rect((w * .85f).toInt(), (h * .2f).toInt(), (w * .95).toInt(), (h * .6f).toInt())
+
+        Log.d("badu", "slotStickImageView x: ${slotStickImageView.x} , y: ${slotStickImageView.y}")
+        Log.d("badu", "slotStickImageView width: ${slotStickImageView.width} , height: ${slotStickImageView.height}")
 
         slotViewWidth = (w * 68f / 360f).toInt()
 
@@ -62,6 +82,35 @@ class SlotMachineView @JvmOverloads constructor(
     override fun onDetachedFromWindow() {
         endLightAnimation()
         super.onDetachedFromWindow()
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        return when (event?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                if (stickerRect.contains(event.x.toInt(), event.y.toInt())) {
+                    stickTouched = true
+                }
+                true
+            }
+
+            MotionEvent.ACTION_UP -> {
+                if (stickerRect.contains(event.x.toInt(), event.y.toInt()) && stickTouched) {
+                    stickClickListener?.onStickClicked()
+                }
+                stickTouched = false
+                true
+            }
+
+            MotionEvent.ACTION_CANCEL -> {
+                stickTouched = false
+                true
+            }
+
+            else -> {
+                super.onTouchEvent(event)
+            }
+        }
     }
 
     fun startRolling() {
