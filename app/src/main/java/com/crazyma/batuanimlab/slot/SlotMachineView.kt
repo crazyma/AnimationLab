@@ -1,5 +1,7 @@
 package com.crazyma.batuanimlab.slot
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
@@ -8,6 +10,8 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.crazyma.batuanimlab.R
@@ -22,6 +26,15 @@ class SlotMachineView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
+
+    companion object {
+        const val RATIO_STICK_SCALE_ANIMATION = .25f
+        const val RATIO_STICK_TRANSLATION_ANIMATION = .1f
+        const val RATIO_HANDLE_ANIMATION = .15f
+
+        private const val ANIM_DURATION_PULLING = 1000L
+        private const val ANIM_DURATION_RELEASING = 200L
+    }
 
     interface OnStickClickListener {
         fun onStickClicked()
@@ -43,6 +56,7 @@ class SlotMachineView @JvmOverloads constructor(
     private var centerSlotViewMarginStart = 0
     private var rightSlotViewMarginStart = 0
     private var stickerRect = Rect()
+    private var stickerAnimDistance = 0f
 
 
     init {
@@ -58,6 +72,7 @@ class SlotMachineView @JvmOverloads constructor(
         // 60%
 
         stickerRect = Rect((w * .85f).toInt(), (h * .2f).toInt(), (w * .95).toInt(), (h * .6f).toInt())
+        stickerAnimDistance = h * RATIO_HANDLE_ANIMATION
 
         Log.d("badu", "slotStickImageView x: ${slotStickImageView.x} , y: ${slotStickImageView.y}")
         Log.d("badu", "slotStickImageView width: ${slotStickImageView.width} , height: ${slotStickImageView.height}")
@@ -96,6 +111,7 @@ class SlotMachineView @JvmOverloads constructor(
 
             MotionEvent.ACTION_UP -> {
                 if (stickerRect.contains(event.x.toInt(), event.y.toInt()) && stickTouched) {
+                    startPullStickAnimation()
                     stickClickListener?.onStickClicked()
                 }
                 stickTouched = false
@@ -192,4 +208,66 @@ class SlotMachineView @JvmOverloads constructor(
         timer?.cancel()
     }
 
+    private fun startPullStickAnimation() {
+
+        val handleAnim = AnimatorSet().apply {
+            playSequentially(ObjectAnimator.ofFloat(
+                slotHandleImageView,
+                "translationY",
+                stickerAnimDistance
+            ).apply {
+                interpolator = DecelerateInterpolator()
+                duration = ANIM_DURATION_PULLING
+            }, ObjectAnimator.ofFloat(
+                slotHandleImageView,
+                "translationY",
+                0f
+            ).apply {
+                interpolator = AccelerateInterpolator()
+                duration = ANIM_DURATION_RELEASING
+            })
+        }
+
+        val stickTranslationOffset = slotStickImageView.height * RATIO_STICK_TRANSLATION_ANIMATION
+        val stickAnim1 = AnimatorSet().apply {
+            playTogether(
+                ObjectAnimator.ofFloat(
+                    slotStickImageView,
+                    "translationY",
+                    stickTranslationOffset
+                ),
+                ObjectAnimator.ofFloat(
+                    slotStickImageView,
+                    "scaleY",
+                    1 - RATIO_STICK_SCALE_ANIMATION
+                )
+            )
+            duration = ANIM_DURATION_PULLING
+        }
+
+        val stickAnim2 = AnimatorSet().apply {
+            playTogether(
+                ObjectAnimator.ofFloat(
+                    slotStickImageView,
+                    "translationY",
+                    0f
+                ),
+                ObjectAnimator.ofFloat(
+                    slotStickImageView,
+                    "scaleY",
+                    1f
+                )
+            )
+            duration = ANIM_DURATION_RELEASING
+        }
+
+        val stickAnim = AnimatorSet().apply {
+            playSequentially(stickAnim1, stickAnim2)
+        }
+
+        AnimatorSet().apply {
+            playTogether(handleAnim, stickAnim)
+        }.start()
+
+    }
 }
