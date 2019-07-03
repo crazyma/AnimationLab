@@ -1,5 +1,6 @@
 package com.crazyma.batuanimlab.slot
 
+import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
@@ -28,16 +29,24 @@ class SlotMachineView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     companion object {
-        const val RATIO_STICK_SCALE_ANIMATION = .25f
-        const val RATIO_STICK_TRANSLATION_ANIMATION = .1f
-        const val RATIO_HANDLE_ANIMATION = .15f
 
+        const val STATE_IDLE = 0
+        const val STATE_PULLING = 1
+        const val STATE_ROLLING = 2
+        const val STATE_FINISH = 3
+
+        private const val RATIO_STICK_SCALE_ANIMATION = .25f
+        private const val RATIO_STICK_TRANSLATION_ANIMATION = .1f
+        private const val RATIO_HANDLE_ANIMATION = .15f
+
+        private const val ANIM_FLESH_INTERVAL = 500L
         private const val ANIM_DURATION_PULLING = 1000L
         private const val ANIM_DURATION_RELEASING = 200L
     }
 
-    interface OnStickClickListener {
+    interface SlotMachineListener {
         fun onStickClicked()
+        fun onRollingEnd()
     }
 
     val list = listOf(
@@ -46,7 +55,11 @@ class SlotMachineView @JvmOverloads constructor(
         R.drawable.img_tryagain
     )
 
-    var stickClickListener: OnStickClickListener? = null
+    var repeatable = true
+
+    var listener: SlotMachineListener? = null
+
+    private var state = STATE_IDLE
 
     private var timer: Timer? = null
     private var stickTouched = false
@@ -63,6 +76,7 @@ class SlotMachineView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.layout_slot_machine, this, true)
 //        setupSlotViews()
         startLightAnimation()
+        setupLaunchButton()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -111,8 +125,7 @@ class SlotMachineView @JvmOverloads constructor(
 
             MotionEvent.ACTION_UP -> {
                 if (stickerRect.contains(event.x.toInt(), event.y.toInt()) && stickTouched) {
-                    startPullStickAnimation()
-                    stickClickListener?.onStickClicked()
+                    askPullingStick()
                 }
                 stickTouched = false
                 true
@@ -129,10 +142,14 @@ class SlotMachineView @JvmOverloads constructor(
         }
     }
 
+    //  TODO: should be private method
     fun startRolling() {
         leftSlotView.startRolling()
         centerSlotView.startRolling()
-        rightSlotView.startRolling()
+        rightSlotView.startRolling {
+            state = STATE_FINISH
+            listener?.onRollingEnd()
+        }
     }
 
     private fun adjustSlotViewPosition() {
@@ -182,6 +199,25 @@ class SlotMachineView @JvmOverloads constructor(
         }
     }
 
+    private fun askPullingStick() {
+        when (state) {
+            STATE_IDLE -> {
+                startPullStickAnimation()
+            }
+            STATE_FINISH -> {
+                if (repeatable) {
+                    startPullStickAnimation()
+                }
+            }
+        }
+    }
+
+    private fun setupLaunchButton() {
+        launchButton.setOnClickListener {
+            askPullingStick()
+        }
+    }
+
     private fun startLightAnimation() {
         timer?.cancel()
         timer = Timer().apply {
@@ -200,7 +236,7 @@ class SlotMachineView @JvmOverloads constructor(
                         }
                     }
                 }
-            }, 500, 500)
+            }, ANIM_FLESH_INTERVAL, ANIM_FLESH_INTERVAL)
         }
     }
 
@@ -267,6 +303,23 @@ class SlotMachineView @JvmOverloads constructor(
 
         AnimatorSet().apply {
             playTogether(handleAnim, stickAnim)
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationRepeat(animation: Animator?) {}
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    state = STATE_ROLLING
+                    startRolling()
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                    state = STATE_IDLE
+                }
+
+                override fun onAnimationStart(animation: Animator?) {
+                    state = STATE_PULLING
+                }
+
+            })
         }.start()
 
     }

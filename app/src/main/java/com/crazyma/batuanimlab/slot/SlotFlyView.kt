@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
+import androidx.core.animation.doOnEnd
 
 /**
  * 10 icon per second
@@ -122,7 +123,7 @@ class SlotFlyView @JvmOverloads constructor(
         currentValue = 0
     }
 
-    fun startRolling() {
+    fun startRolling(action: (() -> Unit)? = null) {
 
         val animatorSet = AnimatorSet().apply {
             playSequentially(
@@ -141,6 +142,9 @@ class SlotFlyView @JvmOverloads constructor(
                     }
                 }
             )
+            doOnEnd {
+                action?.invoke()
+            }
         }
 
         animatorSet.start()

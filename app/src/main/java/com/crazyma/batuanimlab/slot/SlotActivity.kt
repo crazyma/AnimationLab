@@ -38,11 +38,14 @@ class SlotActivity : AppCompatActivity() {
             endDrawableIndex = 2
         }
 
-        slotMachineView.stickClickListener = object : SlotMachineView.OnStickClickListener{
+        slotMachineView.listener = object : SlotMachineView.SlotMachineListener{
             override fun onStickClicked() {
                 Log.d("badu", "stick clicked")
             }
 
+            override fun onRollingEnd() {
+                Log.d("badu", "rolling end")
+            }
         }
         Handler().postDelayed({
             slotMachineView.setupSlotViews()
