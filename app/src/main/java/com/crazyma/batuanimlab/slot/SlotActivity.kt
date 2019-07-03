@@ -1,5 +1,7 @@
 package com.crazyma.batuanimlab.slot
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -50,6 +52,8 @@ class SlotActivity : AppCompatActivity() {
         Handler().postDelayed({
             slotMachineView.setupSlotViews()
         },2000)
+
+        setupBitmapSlotView()
     }
 
     fun buttonClicked(v: View) {
@@ -61,11 +65,22 @@ class SlotActivity : AppCompatActivity() {
 //        slotFlyView2.startRolling()
 //        slotFlyView3.startRolling()
 
-        Log.d("badu","slotMachineView width : ${slotMachineView.width} , height : ${slotMachineView.height}")
-//        Log.d("badu","view 2 width : ${view2.width} , height : ${view2.height}")
+        slotFlyView4.startRolling()
+    }
 
-        slotMachineView.startRolling()
+    fun setupBitmapSlotView(){
+        val bitmap1 = BitmapFactory.decodeResource(resources, R.drawable.img_slot_card)
+        val bitmap2 = BitmapFactory.decodeResource(resources, R.drawable.img_nexttime)
+        val bitmap3 = BitmapFactory.decodeResource(resources, R.drawable.img_tryagain)
 
+        val list = listOf<Bitmap>(bitmap1, bitmap2, bitmap3)
+
+        slotFlyView4.apply {
+            bitmaps = list
+            slotIndex = SLOT_INDEX_TWO
+            endBitmapIndex = 1
+            initPosition()
+        }
     }
 
 }
