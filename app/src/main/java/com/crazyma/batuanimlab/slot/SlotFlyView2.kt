@@ -8,7 +8,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
@@ -24,7 +23,6 @@ class SlotFlyView2 @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     companion object {
-
         const val DURATION_PROGRESS_ONE = 1
         const val DURATION_PROGRESS_TWO = 2
         const val DURATION_PROGRESS_THREE = 3
@@ -59,6 +57,10 @@ class SlotFlyView2 @JvmOverloads constructor(
         }
 
     var bitmaps: List<Bitmap>? = null
+        set(value) {
+            field = value
+            generateOrder()
+        }
 
     var endBitmapIndex = 0
         set(value) {
@@ -109,18 +111,11 @@ class SlotFlyView2 @JvmOverloads constructor(
         super.onDraw(canvas)
 
         firstVisibleBitmap?.run {
-            Log.d("badu", "y: ${firstRect.top}")
-            canvas.drawBitmap(this, null , firstRect, paint)
-
-//            setBounds(iconLeft, firstIconPositionY, iconRight, (firstIconPositionY + iconHeight))
-//            draw(canvas)
+            canvas.drawBitmap(this, null, firstRect, paint)
         }
 
         secondVisibleBitmap?.run {
-            Log.i("badu", "y: ${secondRect.top}")
-            canvas.drawBitmap(this, null , secondRect, paint)
-//            setBounds(iconLeft, secondIconPositionY, iconRight, (secondIconPositionY + iconHeight))
-//            draw(canvas)
+            canvas.drawBitmap(this, null, secondRect, paint)
         }
     }
 
@@ -156,6 +151,7 @@ class SlotFlyView2 @JvmOverloads constructor(
     }
 
     private fun calculatePosition() {
+
         if (heightSize == 0) return
 
         quotient = currentValue / heightSize
@@ -171,8 +167,8 @@ class SlotFlyView2 @JvmOverloads constructor(
             secondIconPositionY = startY - reminder
             firstIconPositionY = secondIconPositionY + iconHeight + interval
 
-            firstVisibleBitmap = getVisibleBitmap(quotient)
-            secondVisibleBitmap = getVisibleBitmap(quotient + 1)
+            secondVisibleBitmap = getVisibleBitmap(quotient)
+            firstVisibleBitmap = getVisibleBitmap(quotient + 1)
         }
 
         firstRect = Rect(iconLeft, firstIconPositionY, iconRight, (firstIconPositionY + iconHeight))
@@ -218,11 +214,12 @@ class SlotFlyView2 @JvmOverloads constructor(
 
     private fun getVisibleBitmap(index: Int): Bitmap? {
         val indexList = this.indexList
+        val bitmaps = this.bitmaps
 
-        return if (!indexList.isNullOrEmpty() && bitmaps?.isNotEmpty() == true &&
+        return if (!indexList.isNullOrEmpty() && !bitmaps.isNullOrEmpty() &&
             index >= 0 && index < indexList.size
         ) {
-            bitmaps!![indexList[index]]
+            bitmaps[indexList[index]]
         } else {
             null
         }
