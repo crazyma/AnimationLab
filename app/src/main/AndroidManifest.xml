@@ -27,6 +27,7 @@
         <activity android:name=".sprinkle.SprinkleActivity">
 
         </activity>
+        <activity android:name=".progress.BatuProgressViewActivity" />
     </application>
 
 </manifest>

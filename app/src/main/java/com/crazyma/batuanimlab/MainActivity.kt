@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.crazyma.batuanimlab.progress.BatuProgressView
+import com.crazyma.batuanimlab.progress.BatuProgressViewActivity
 import com.crazyma.batuanimlab.slot.SlotActivity
 import com.crazyma.batuanimlab.sprinkle.SprinkleActivity
 
@@ -24,6 +26,9 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.sprinkleButton -> {
                 startActivity(Intent(this@MainActivity, SprinkleActivity::class.java))
+            }
+            R.id.progressButton -> {
+                startActivity(Intent(this@MainActivity, BatuProgressViewActivity::class.java))
             }
         }
     }
