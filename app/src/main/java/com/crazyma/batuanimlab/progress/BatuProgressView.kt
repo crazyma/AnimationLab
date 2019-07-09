@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.Log
@@ -25,21 +24,49 @@ class BatuProgressView @JvmOverloads constructor(
 
     var indicatorDrawable: Drawable? = null
         set(value) {
-            field= value
+            field = value
+            calculateIndicatorSize()
             requestLayout()
         }
+
+    var indicatorPadding = INDICATOR_PADDING_DEFAULT
+        set(value) {
+            field = value
+            requestLayout()
+        }
+
+    var progressLineWidth = PROGRESS_LINE_WIDTH
+        set(value) {
+            field = value
+            requestLayout()
+        }
+
+    var baseColor = Color.BLACK
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    var progressColor = Color.RED
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    var percentage = 0.5f
+        set(value){
+            field = value
+            calculateProgressPosition(value)
+            invalidate()
+        }
+
     private var indicatorWidth = 0
     private var indicatorHeight = 0
-    private var indicatorPadding = INDICATOR_PADDING_DEFAULT
-    private var progressLineWidth = PROGRESS_LINE_WIDTH
     private var progressY = 0f
     private var baseStartX = 0f
     private var baseEndX = 0f
     private var progressStartX = 0f
     private var progressEndX = 0f
-    private var percentage = 0.5f
-    private var baseColor = Color.BLACK
-    private var progressColor = Color.RED
 
     init {
         val a = context.theme.obtainStyledAttributes(
@@ -51,18 +78,19 @@ class BatuProgressView @JvmOverloads constructor(
         try {
             baseColor = a.getColor(R.styleable.BatuProgressView_baseColor, Color.BLACK)
             progressColor = a.getColor(R.styleable.BatuProgressView_progressColor, Color.RED)
+            indicatorPadding =
+                a.getDimensionPixelSize(R.styleable.BatuProgressView_indicatorPadding, INDICATOR_PADDING_DEFAULT)
+            progressLineWidth =
+                a.getDimensionPixelSize(R.styleable.BatuProgressView_progressLineWidth, PROGRESS_LINE_WIDTH)
 
             val drawableResId = a.getResourceId(R.styleable.BatuProgressView_indicator, -1)
-            if(drawableResId != -1)
+            if (drawableResId != -1)
                 indicatorDrawable = AppCompatResources.getDrawable(context, drawableResId)
         } finally {
             a.recycle()
         }
 
-        indicatorWidth = indicatorDrawable?.intrinsicWidth ?: 0
-        indicatorHeight = indicatorDrawable?.intrinsicHeight ?: 0
-        indicatorPadding = INDICATOR_PADDING_DEFAULT
-        progressLineWidth = PROGRESS_LINE_WIDTH
+        calculateIndicatorSize()
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -71,19 +99,25 @@ class BatuProgressView @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
+        Log.d("badu", "onDraw")
         super.onDraw(canvas)
 
-        paint.apply{
+        paint.apply {
             strokeWidth = progressLineWidth.toFloat()
             color = baseColor
         }
-        canvas.drawLine(baseStartX, progressY, baseEndX , progressY, paint)
+        canvas.drawLine(baseStartX, progressY, baseEndX, progressY, paint)
 
         paint.color = progressColor
-        canvas.drawLine(progressStartX, progressY, progressEndX , progressY, paint)
+        canvas.drawLine(progressStartX, progressY, progressEndX, progressY, paint)
 
         indicatorDrawable?.run {
-            setBounds((progressStartX - indicatorWidth/2f).toInt(), 0, (progressStartX + indicatorWidth/2f).toInt(), indicatorHeight)
+            setBounds(
+                (progressStartX - indicatorWidth / 2f).toInt(),
+                0,
+                (progressStartX + indicatorWidth / 2f).toInt(),
+                indicatorHeight
+            )
             draw(canvas)
         }
     }
@@ -92,7 +126,7 @@ class BatuProgressView @JvmOverloads constructor(
      * view 的高度: progress height + padding + indicator height
      */
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-
+        Log.d("badu", "onMeasure")
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
         val heightSize = MeasureSpec.getSize(heightMeasureSpec)
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
@@ -116,15 +150,20 @@ class BatuProgressView @JvmOverloads constructor(
         calculateProgressPosition(percentage)
     }
 
-    private fun calculateProgressPosition(percentage: Float){
+    private fun calculateProgressPosition(percentage: Float) {
         val distance = baseEndX - baseStartX
         progressStartX = distance * percentage + paddingStart.toFloat()
         progressEndX = baseEndX
     }
 
-    private fun calculateBasePosition(viewWidth: Int){
+    private fun calculateBasePosition(viewWidth: Int) {
         progressY = indicatorHeight + indicatorPadding + progressLineWidth * 0.5f
         baseStartX = paddingStart.toFloat()
         baseEndX = (viewWidth - paddingEnd).toFloat()
+    }
+
+    private fun calculateIndicatorSize() {
+        indicatorWidth = indicatorDrawable?.intrinsicWidth ?: 0
+        indicatorHeight = indicatorDrawable?.intrinsicHeight ?: 0
     }
 }
