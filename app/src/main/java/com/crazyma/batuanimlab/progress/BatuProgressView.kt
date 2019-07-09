@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import com.crazyma.batuanimlab.R
+import android.os.Parcel
+import android.os.Parcelable
 
 class BatuProgressView @JvmOverloads constructor(
     context: Context,
@@ -150,6 +152,10 @@ class BatuProgressView @JvmOverloads constructor(
         calculateProgressPosition(percentage)
     }
 
+    override fun onSaveInstanceState(): Parcelable? {
+        return super.onSaveInstanceState()
+    }
+
     private fun calculateProgressPosition(percentage: Float) {
         val distance = baseEndX - baseStartX
         progressStartX = distance * percentage + paddingStart.toFloat()
@@ -165,5 +171,34 @@ class BatuProgressView @JvmOverloads constructor(
     private fun calculateIndicatorSize() {
         indicatorWidth = indicatorDrawable?.intrinsicWidth ?: 0
         indicatorHeight = indicatorDrawable?.intrinsicHeight ?: 0
+    }
+
+    internal class SavedState : BaseSavedState {
+        var value: Int = 0 //this will store the current value from ValueBar
+
+        constructor(source: Parcel) : super(source) {
+            value = source.readInt()
+        }
+
+        constructor(superState: Parcelable) : super(superState)
+
+        override fun writeToParcel(out: Parcel, flags: Int) {
+            super.writeToParcel(out, flags)
+            out.writeInt(value)
+        }
+
+        companion object {
+
+            @JvmField
+            val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
+                override fun createFromParcel(`in`: Parcel): SavedState {
+                    return SavedState(`in`)
+                }
+
+                override fun newArray(size: Int): Array<SavedState?> {
+                    return arrayOfNulls(size)
+                }
+            }
+        }
     }
 }
