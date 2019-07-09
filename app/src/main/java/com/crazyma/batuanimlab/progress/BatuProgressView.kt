@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import com.crazyma.batuanimlab.R
@@ -18,15 +19,17 @@ class BatuProgressView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     companion object {
-        const val INDICATOR_WIDTH_DEFAULT = 60
-        const val INDICATOR_HEIGHT_DEFAULT = 60
         const val INDICATOR_PADDING_DEFAULT = 30
         const val PROGRESS_LINE_WIDTH = 30
     }
 
-    private var indicatorDrawable: Drawable? = null
-    private var indicatorWidth = INDICATOR_WIDTH_DEFAULT
-    private var indicatorHeight = INDICATOR_HEIGHT_DEFAULT
+    var indicatorDrawable: Drawable? = null
+        set(value) {
+            field= value
+            requestLayout()
+        }
+    private var indicatorWidth = 0
+    private var indicatorHeight = 0
     private var indicatorPadding = INDICATOR_PADDING_DEFAULT
     private var progressLineWidth = PROGRESS_LINE_WIDTH
     private var progressY = 0f
@@ -35,7 +38,8 @@ class BatuProgressView @JvmOverloads constructor(
     private var progressStartX = 0f
     private var progressEndX = 0f
     private var percentage = 0.5f
-    private var indicatorRect = Rect()
+    private var baseColor = Color.BLACK
+    private var progressColor = Color.RED
 
     init {
         val a = context.theme.obtainStyledAttributes(
@@ -45,16 +49,18 @@ class BatuProgressView @JvmOverloads constructor(
         )
 
         try {
-            // Resources$NotFoundException if vector image
-            // badge = a.getDrawable(R.styleable.PreferencesBadge_badge)
+            baseColor = a.getColor(R.styleable.BatuProgressView_baseColor, Color.BLACK)
+            progressColor = a.getColor(R.styleable.BatuProgressView_progressColor, Color.RED)
+
             val drawableResId = a.getResourceId(R.styleable.BatuProgressView_indicator, -1)
-            this.indicatorDrawable = AppCompatResources.getDrawable(context, drawableResId)
+            if(drawableResId != -1)
+                indicatorDrawable = AppCompatResources.getDrawable(context, drawableResId)
         } finally {
             a.recycle()
         }
 
-        indicatorWidth = indicatorDrawable?.intrinsicWidth ?: INDICATOR_WIDTH_DEFAULT
-        indicatorHeight = indicatorDrawable?.intrinsicHeight ?: INDICATOR_HEIGHT_DEFAULT
+        indicatorWidth = indicatorDrawable?.intrinsicWidth ?: 0
+        indicatorHeight = indicatorDrawable?.intrinsicHeight ?: 0
         indicatorPadding = INDICATOR_PADDING_DEFAULT
         progressLineWidth = PROGRESS_LINE_WIDTH
     }
@@ -69,11 +75,11 @@ class BatuProgressView @JvmOverloads constructor(
 
         paint.apply{
             strokeWidth = progressLineWidth.toFloat()
-            color = Color.BLACK
+            color = baseColor
         }
         canvas.drawLine(baseStartX, progressY, baseEndX , progressY, paint)
 
-        paint.color = Color.BLUE
+        paint.color = progressColor
         canvas.drawLine(progressStartX, progressY, progressEndX , progressY, paint)
 
         indicatorDrawable?.run {
@@ -92,9 +98,6 @@ class BatuProgressView @JvmOverloads constructor(
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
 
-        calculateBasePosition(widthSize)
-        calculateProgressPosition(percentage)
-
         val finalHeight = when (heightMode) {
             MeasureSpec.EXACTLY -> {
                 heightSize
@@ -105,6 +108,12 @@ class BatuProgressView @JvmOverloads constructor(
         }
 
         super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(finalHeight, MeasureSpec.EXACTLY))
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        calculateBasePosition(w)
+        calculateProgressPosition(percentage)
     }
 
     private fun calculateProgressPosition(percentage: Float){
