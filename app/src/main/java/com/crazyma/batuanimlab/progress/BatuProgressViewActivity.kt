@@ -20,7 +20,8 @@ class BatuProgressViewActivity: AppCompatActivity() {
         val drawable =ContextCompat.getDrawable(this, R.drawable.img_waitlist_alert_info)
         batuProgressView.indicatorDrawable = drawable
 
-        ObjectAnimator.ofFloat(batuProgressView,"percentage",1f,0f,1f).apply {
+
+        ObjectAnimator.ofFloat(batuProgressView,"percentage",Math.random().toFloat()).apply {
             duration = 1000
             start()
         }
