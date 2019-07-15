@@ -28,8 +28,12 @@
 
         </activity>
         <activity android:name=".progress.BatuProgressViewActivity" />
-        <activity android:name=".inner_trans.InnerTransitionActivity"
-            android:theme="@style/AppTheme.NoStatus.NoNavigation"/>
+        <activity
+            android:name=".inner_trans.InnerTransitionActivity"
+            android:theme="@style/AppTheme.NoStatus.NoNavigation" />
+        <activity
+            android:name=".queue.QueueActivity"
+            android:theme="@style/AppTheme.NoStatus.NoNavigation" />
     </application>
 
 </manifest>

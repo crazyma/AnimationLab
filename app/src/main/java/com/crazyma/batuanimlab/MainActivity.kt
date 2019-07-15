@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import com.crazyma.batuanimlab.inner_trans.InnerTransitionActivity
 import com.crazyma.batuanimlab.progress.BatuProgressViewActivity
+import com.crazyma.batuanimlab.queue.QueueActivity
 import com.crazyma.batuanimlab.slot.SlotActivity
 import com.crazyma.batuanimlab.sprinkle.SprinkleActivity
 
@@ -32,6 +33,11 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.innerTransButton -> {
                 startActivity(Intent(this@MainActivity, InnerTransitionActivity::class.java))
+            }
+            R.id.queueButton -> {
+                startActivity(Intent(this@MainActivity, QueueActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                })
             }
         }
     }
