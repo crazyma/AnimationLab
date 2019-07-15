@@ -9,6 +9,7 @@
     </declare-styleable>
     <declare-styleable name="ClipView">
         <attr name="isClipped" format="boolean"/>
+        <attr name="isPatternShowed" format="boolean"/>
     </declare-styleable>
 
 </resources>

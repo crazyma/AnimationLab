@@ -22,6 +22,12 @@ class ClipView @JvmOverloads constructor(
         const val OFFSET = 30
     }
 
+    var isPatternShowed = true
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
     private var patternDrawable: Drawable =
         ContextCompat.getDrawable(context, R.drawable.img_bg_pattern_blue)
             ?: throw RuntimeException("Load patternDrawable resource failed")
@@ -49,9 +55,10 @@ class ClipView @JvmOverloads constructor(
             0, 0
         )
 
-        var isClipped = true
+        val isClipped: Boolean
         try {
             isClipped = a.getBoolean(R.styleable.ClipView_isClipped, true)
+            isPatternShowed = a.getBoolean(R.styleable.ClipView_isPatternShowed, true)
         } finally {
             a.recycle()
         }
@@ -75,16 +82,18 @@ class ClipView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        for (i in 0 until patternXRepeatCount) {
-            for (j in 0 until patternYRepeatCount) {
-                patternDrawable.run {
-                    setBounds(
-                        patternDrawable.intrinsicWidth * i,
-                        patternDrawable.intrinsicHeight * j - currentOffset,
-                        patternDrawable.intrinsicWidth * (i + 1),
-                        patternDrawable.intrinsicHeight * (j + 1) - currentOffset
-                    )
-                    draw(canvas)
+        if (isPatternShowed) {
+            for (i in 0 until patternXRepeatCount) {
+                for (j in 0 until patternYRepeatCount) {
+                    patternDrawable.run {
+                        setBounds(
+                            patternDrawable.intrinsicWidth * i,
+                            patternDrawable.intrinsicHeight * j - currentOffset,
+                            patternDrawable.intrinsicWidth * (i + 1),
+                            patternDrawable.intrinsicHeight * (j + 1) - currentOffset
+                        )
+                        draw(canvas)
+                    }
                 }
             }
         }
