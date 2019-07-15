@@ -8,8 +8,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.os.Handler
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.animation.AccelerateInterpolator
@@ -54,7 +55,7 @@ class SlotMachineView @JvmOverloads constructor(
 
     var listener: SlotMachineListener? = null
 
-    private var state = STATE_IDLE
+    private var slotState = STATE_IDLE
 
     private var timer: Timer? = null
     private var stickTouched = false
@@ -75,15 +76,9 @@ class SlotMachineView @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        //  20%
-        // 85% 95%
-        // 60%
 
         stickerRect = Rect((w * .85f).toInt(), (h * .2f).toInt(), (w * .95).toInt(), (h * .6f).toInt())
         stickerAnimDistance = h * RATIO_HANDLE_ANIMATION
-
-        Log.d("badu", "slotStickImageView x: ${slotStickImageView.x} , y: ${slotStickImageView.y}")
-        Log.d("badu", "slotStickImageView width: ${slotStickImageView.width} , height: ${slotStickImageView.height}")
 
         slotViewWidth = (w * 68f / 360f).toInt()
 
@@ -136,12 +131,34 @@ class SlotMachineView @JvmOverloads constructor(
         }
     }
 
+    override fun onSaveInstanceState(): Parcelable {
+        val savedState = SavedState(super.onSaveInstanceState()!!)
+        savedState.apply {
+            slotState = this@SlotMachineView.slotState
+        }
+        return savedState
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable) {
+        if (state is SavedState) {
+            super.onRestoreInstanceState(state.superState)
+
+            state.run {
+                this@SlotMachineView.slotState = when (slotState) {
+                    STATE_FINISH -> STATE_FINISH
+                    else -> STATE_IDLE
+                }
+            }
+        } else {
+            super.onRestoreInstanceState(state)
+        }
+    }
 
     private fun startRolling() {
         leftSlotView.startRolling()
         centerSlotView.startRolling()
         rightSlotView.startRolling {
-            state = STATE_FINISH
+            slotState = STATE_FINISH
             listener?.onRollingEnd()
         }
     }
@@ -178,26 +195,32 @@ class SlotMachineView @JvmOverloads constructor(
      * Setup the SltView, including the 'slot index', 'ended resource index' and 'resource list'.
      * Also, call the init ui method.
      *
-     * You MUST call this method to play this machine
+     * You MUST call this method to play this machine, especially configuration change happened.
      */
     fun setupSlotViews(bitmapList: List<Bitmap>, resultIndex: IntArray) {
         leftSlotView.apply {
             this.bitmaps = bitmapList
             slotIndex = SLOT_INDEX_ONE
             endBitmapIndex = resultIndex[0]
-            initPosition()
+
+            if (slotState == STATE_FINISH) finalPosition()
+            else initPosition()
         }
         centerSlotView.apply {
             this.bitmaps = bitmapList
             slotIndex = SLOT_INDEX_TWO
             endBitmapIndex = resultIndex[1]
-            initPosition()
+
+            if (slotState == STATE_FINISH) finalPosition()
+            else initPosition()
         }
         rightSlotView.apply {
             this.bitmaps = bitmapList
             slotIndex = SLOT_INDEX_THREE
             endBitmapIndex = resultIndex[2]
-            initPosition()
+
+            if (slotState == STATE_FINISH) finalPosition()
+            else initPosition()
         }
 
         launchButton.isEnabled = true
@@ -205,7 +228,7 @@ class SlotMachineView @JvmOverloads constructor(
 
     private fun askPullingStick() {
         if (isReady()) {
-            when (state) {
+            when (slotState) {
                 STATE_IDLE -> {
                     startPullStickAnimation()
                 }
@@ -313,20 +336,50 @@ class SlotMachineView @JvmOverloads constructor(
                 override fun onAnimationRepeat(animation: Animator?) {}
 
                 override fun onAnimationEnd(animation: Animator?) {
-                    state = STATE_ROLLING
+                    slotState = STATE_ROLLING
                     startRolling()
                 }
 
                 override fun onAnimationCancel(animation: Animator?) {
-                    state = STATE_IDLE
+                    slotState = STATE_IDLE
                 }
 
                 override fun onAnimationStart(animation: Animator?) {
-                    state = STATE_PULLING
+                    slotState = STATE_PULLING
                 }
 
             })
         }.start()
 
+    }
+
+    internal class SavedState : BaseSavedState {
+        //        var value: Int = 0 //this will store the current value from ValueBar
+        var slotState = 0
+
+        constructor(source: Parcel) : super(source) {
+            slotState = source.readInt()
+        }
+
+        constructor(superState: Parcelable) : super(superState)
+
+        override fun writeToParcel(out: Parcel, flags: Int) {
+            super.writeToParcel(out, flags)
+            out.writeInt(slotState)
+        }
+
+        companion object {
+
+            @JvmField
+            val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
+                override fun createFromParcel(`in`: Parcel): SavedState {
+                    return SavedState(`in`)
+                }
+
+                override fun newArray(size: Int): Array<SavedState?> {
+                    return arrayOfNulls(size)
+                }
+            }
+        }
     }
 }
