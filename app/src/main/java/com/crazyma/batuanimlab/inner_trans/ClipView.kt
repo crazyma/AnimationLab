@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import com.crazyma.batuanimlab.R
 import java.lang.RuntimeException
 
-class InnerTransitionView @JvmOverloads constructor(
+class ClipView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -41,6 +41,27 @@ class InnerTransitionView @JvmOverloads constructor(
             postInvalidate()
         }
     private var animator: ValueAnimator? = null
+
+    init {
+        val a = context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.ClipView,
+            0, 0
+        )
+
+        var isClipped = true
+        try {
+            isClipped = a.getBoolean(R.styleable.ClipView_isClipped, true)
+        } finally {
+            a.recycle()
+        }
+
+        currentOffset = if (isClipped) {
+            (context.resources.displayMetrics.density * OFFSET).toInt()
+        } else {
+            0
+        }
+    }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -79,10 +100,10 @@ class InnerTransitionView @JvmOverloads constructor(
         }
     }
 
-    fun moveToClipPosition() {
+    fun moveToClipPosition(duration: Long? = null) {
         animator?.cancel()
         animator = ValueAnimator.ofInt(currentOffset, offsetY).apply {
-            duration = DURATION_OFFSET_ANIM
+            this.duration = duration ?: DURATION_OFFSET_ANIM
             addUpdateListener {
                 currentOffset = it.animatedValue as Int
             }
@@ -90,10 +111,10 @@ class InnerTransitionView @JvmOverloads constructor(
         }
     }
 
-    fun moveToTopPosition() {
+    fun moveToTopPosition(duration: Long? = null) {
         animator?.cancel()
         animator = ValueAnimator.ofInt(currentOffset, 0).apply {
-            duration = DURATION_OFFSET_ANIM
+            this.duration = duration ?: DURATION_OFFSET_ANIM
             addUpdateListener {
                 currentOffset = (it.animatedValue as Int)
             }
