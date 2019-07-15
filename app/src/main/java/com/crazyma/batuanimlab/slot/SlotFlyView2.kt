@@ -150,6 +150,8 @@ class SlotFlyView2 @JvmOverloads constructor(
         animatorSet.start()
     }
 
+    fun isReady() = !bitmaps.isNullOrEmpty()
+
     private fun calculatePosition() {
 
         if (heightSize == 0) return

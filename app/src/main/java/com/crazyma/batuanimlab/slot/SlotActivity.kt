@@ -40,7 +40,7 @@ class SlotActivity : AppCompatActivity() {
             endDrawableIndex = 2
         }
 
-        slotMachineView.listener = object : SlotMachineView.SlotMachineListener{
+        slotMachineView.listener = object : SlotMachineView.SlotMachineListener {
             override fun onStickClicked() {
                 Log.d("badu", "stick clicked")
             }
@@ -50,8 +50,8 @@ class SlotActivity : AppCompatActivity() {
             }
         }
         Handler().postDelayed({
-            slotMachineView.setupSlotViews()
-        },2000)
+            slotMachineView.setupSlotViews(getBitmapList(), intArrayOf(2, 1, 0))
+        }, 2000)
 
         setupBitmapSlotView()
     }
@@ -68,19 +68,23 @@ class SlotActivity : AppCompatActivity() {
         slotFlyView4.startRolling()
     }
 
-    fun setupBitmapSlotView(){
-        val bitmap1 = BitmapFactory.decodeResource(resources, R.drawable.img_slot_card)
-        val bitmap2 = BitmapFactory.decodeResource(resources, R.drawable.img_nexttime)
-        val bitmap3 = BitmapFactory.decodeResource(resources, R.drawable.img_tryagain)
+    fun setupBitmapSlotView() {
 
-        val list = listOf<Bitmap>(bitmap1, bitmap2, bitmap3)
 
         slotFlyView4.apply {
-            bitmaps = list
+            bitmaps = getBitmapList()
             slotIndex = SLOT_INDEX_TWO
             endBitmapIndex = 1
             initPosition()
         }
+    }
+
+    private fun getBitmapList() = run {
+        val bitmap1 = BitmapFactory.decodeResource(resources, R.drawable.img_slot_card)
+        val bitmap2 = BitmapFactory.decodeResource(resources, R.drawable.img_nexttime)
+        val bitmap3 = BitmapFactory.decodeResource(resources, R.drawable.img_tryagain)
+
+        listOf<Bitmap>(bitmap1, bitmap2, bitmap3)
     }
 
 }

@@ -5,6 +5,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Rect
 import android.os.Handler
 import android.util.AttributeSet
@@ -49,12 +50,6 @@ class SlotMachineView @JvmOverloads constructor(
         fun onRollingEnd()
     }
 
-    val list = listOf(
-        R.drawable.img_slot_card,
-        R.drawable.img_nexttime,
-        R.drawable.img_tryagain
-    )
-
     var repeatable = true
 
     var listener: SlotMachineListener? = null
@@ -74,7 +69,6 @@ class SlotMachineView @JvmOverloads constructor(
 
     init {
         LayoutInflater.from(context).inflate(R.layout.layout_slot_machine, this, true)
-//        setupSlotViews()
         startLightAnimation()
         setupLaunchButton()
     }
@@ -142,8 +136,8 @@ class SlotMachineView @JvmOverloads constructor(
         }
     }
 
-    //  TODO: should be private method
-    fun startRolling() {
+
+    private fun startRolling() {
         leftSlotView.startRolling()
         centerSlotView.startRolling()
         rightSlotView.startRolling {
@@ -151,6 +145,8 @@ class SlotMachineView @JvmOverloads constructor(
             listener?.onRollingEnd()
         }
     }
+
+    private fun isReady() = leftSlotView.isReady() && centerSlotView.isReady() && rightSlotView.isReady()
 
     private fun adjustSlotViewPosition() {
         (leftSlotView.layoutParams as LayoutParams).apply {
@@ -178,35 +174,45 @@ class SlotMachineView @JvmOverloads constructor(
         }
     }
 
-    fun setupSlotViews() {
+    /**
+     * Setup the SltView, including the 'slot index', 'ended resource index' and 'resource list'.
+     * Also, call the init ui method.
+     *
+     * You MUST call this method to play this machine
+     */
+    fun setupSlotViews(bitmapList: List<Bitmap>, resultIndex: IntArray) {
         leftSlotView.apply {
-            drawableResIds = list
+            this.bitmaps = bitmapList
             slotIndex = SLOT_INDEX_ONE
-            endDrawableIndex = 2
+            endBitmapIndex = resultIndex[0]
             initPosition()
         }
         centerSlotView.apply {
-            drawableResIds = list
+            this.bitmaps = bitmapList
             slotIndex = SLOT_INDEX_TWO
-            endDrawableIndex = 1
+            endBitmapIndex = resultIndex[1]
             initPosition()
         }
         rightSlotView.apply {
-            drawableResIds = list
+            this.bitmaps = bitmapList
             slotIndex = SLOT_INDEX_THREE
-            endDrawableIndex = 2
+            endBitmapIndex = resultIndex[2]
             initPosition()
         }
+
+        launchButton.isEnabled = true
     }
 
     private fun askPullingStick() {
-        when (state) {
-            STATE_IDLE -> {
-                startPullStickAnimation()
-            }
-            STATE_FINISH -> {
-                if (repeatable) {
+        if (isReady()) {
+            when (state) {
+                STATE_IDLE -> {
                     startPullStickAnimation()
+                }
+                STATE_FINISH -> {
+                    if (repeatable) {
+                        startPullStickAnimation()
+                    }
                 }
             }
         }
