@@ -9,7 +9,6 @@
         android:id="@+id/slotMachineImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/colorOrange"
         android:scaleType="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
