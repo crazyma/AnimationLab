@@ -15,6 +15,7 @@
         android:background="@color/colorPink"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
+        app:indicatorWidth="24dp"
         app:indicatorPadding="8dp"
         app:indicator="@drawable/img_waitlist_alert_info"
         app:layout_constraintBottom_toBottomOf="parent"
