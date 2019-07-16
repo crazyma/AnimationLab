@@ -7,9 +7,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
-import android.os.Handler
-import android.os.Parcel
-import android.os.Parcelable
+import android.os.*
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -66,7 +64,6 @@ class SlotMachineView @JvmOverloads constructor(
     private var rightSlotViewMarginStart = 0
     private var stickerRect = Rect()
     private var stickerAnimDistance = 0f
-
 
     init {
         LayoutInflater.from(context).inflate(R.layout.layout_slot_machine, this, true)
@@ -252,15 +249,17 @@ class SlotMachineView @JvmOverloads constructor(
         timer = Timer().apply {
             schedule(object : TimerTask() {
                 override fun run() {
-                    findViewById<ImageView>(R.id.slotLightImageView)?.apply {
-                        tag = when (tag) {
-                            true -> {
-                                setImageResource(R.drawable.img_slot_light01)
-                                false
-                            }
-                            else -> {
-                                setImageResource(R.drawable.img_slot_light02)
-                                true
+                    Handler(Looper.getMainLooper()).post {
+                        findViewById<ImageView>(R.id.slotLightImageView)?.apply {
+                            tag = when (tag) {
+                                true -> {
+                                    setImageResource(R.drawable.img_slot_light01)
+                                    false
+                                }
+                                else -> {
+                                    setImageResource(R.drawable.img_slot_light02)
+                                    true
+                                }
                             }
                         }
                     }
