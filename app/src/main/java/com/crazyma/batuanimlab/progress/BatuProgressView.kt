@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import android.os.Parcel
@@ -24,6 +23,13 @@ class BatuProgressView @JvmOverloads constructor(
         const val INDICATOR_PADDING_DEFAULT = 30
         const val PROGRESS_LINE_WIDTH = 30
     }
+
+    var indicatorWidth: Int = -1
+        set(value) {
+            field = value
+            calculateIndicatorSize()
+            requestLayout()
+        }
 
     var indicatorDrawable: Drawable? = null
         set(value) {
@@ -57,14 +63,14 @@ class BatuProgressView @JvmOverloads constructor(
         }
 
     var percentage = 0.5f
-        set(value){
+        set(value) {
             field = value
             calculateProgressPosition(value)
             invalidate()
         }
 
-    private var indicatorWidth = 0
-    private var indicatorHeight = 0
+    private var finalIndicatorWidth = 0
+    private var finalIndicatorHeight = 0
     private var progressY = 0f
     private var baseStartX = 0f
     private var baseEndX = 0f
@@ -89,6 +95,9 @@ class BatuProgressView @JvmOverloads constructor(
             val drawableResId = a.getResourceId(R.styleable.BatuProgressView_indicator, -1)
             if (drawableResId != -1)
                 indicatorDrawable = AppCompatResources.getDrawable(context, drawableResId)
+
+            indicatorWidth = a.getDimensionPixelSize(R.styleable.BatuProgressView_indicatorWidth, -1)
+
         } finally {
             a.recycle()
         }
@@ -102,7 +111,6 @@ class BatuProgressView @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
-        Log.d("badu", "onDraw")
         super.onDraw(canvas)
 
         paint.apply {
@@ -116,10 +124,10 @@ class BatuProgressView @JvmOverloads constructor(
 
         indicatorDrawable?.run {
             setBounds(
-                (progressStartX - indicatorWidth / 2f).toInt(),
+                (progressStartX - finalIndicatorWidth / 2f).toInt(),
                 0,
-                (progressStartX + indicatorWidth / 2f).toInt(),
-                indicatorHeight
+                (progressStartX + finalIndicatorWidth / 2f).toInt(),
+                finalIndicatorHeight
             )
             draw(canvas)
         }
@@ -129,10 +137,7 @@ class BatuProgressView @JvmOverloads constructor(
      * view 的高度: progress height + padding + indicator height
      */
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        Log.d("badu", "onMeasure")
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
         val heightSize = MeasureSpec.getSize(heightMeasureSpec)
-        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
 
         val finalHeight = when (heightMode) {
@@ -140,7 +145,7 @@ class BatuProgressView @JvmOverloads constructor(
                 heightSize
             }
             else -> {
-                indicatorHeight + indicatorPadding + progressLineWidth
+                finalIndicatorHeight + indicatorPadding + progressLineWidth
             }
         }
 
@@ -155,7 +160,7 @@ class BatuProgressView @JvmOverloads constructor(
 
     override fun onSaveInstanceState(): Parcelable {
         val savedState = SavedState(super.onSaveInstanceState()!!)
-        savedState.apply{
+        savedState.apply {
             baseColor = this@BatuProgressView.baseColor
             progressColor = this@BatuProgressView.progressColor
             indicatorPadding = this@BatuProgressView.indicatorPadding
@@ -168,12 +173,12 @@ class BatuProgressView @JvmOverloads constructor(
     override fun onRestoreInstanceState(state: Parcelable) {
         if (state is SavedState) {
             super.onRestoreInstanceState(state.superState)
-            state.run{
-                 this@BatuProgressView.baseColor = baseColor
-                 this@BatuProgressView.progressColor = progressColor
-                 this@BatuProgressView.indicatorPadding = indicatorPadding
-                 this@BatuProgressView.progressLineWidth = progressLineWidth
-                 this@BatuProgressView.percentage = percentage
+            state.run {
+                this@BatuProgressView.baseColor = baseColor
+                this@BatuProgressView.progressColor = progressColor
+                this@BatuProgressView.indicatorPadding = indicatorPadding
+                this@BatuProgressView.progressLineWidth = progressLineWidth
+                this@BatuProgressView.percentage = percentage
             }
         } else {
             super.onRestoreInstanceState(state)
@@ -187,20 +192,31 @@ class BatuProgressView @JvmOverloads constructor(
     }
 
     private fun calculateBasePosition(viewWidth: Int) {
-        progressY = indicatorHeight + indicatorPadding + progressLineWidth * 0.5f
+        progressY = finalIndicatorHeight + indicatorPadding + progressLineWidth * 0.5f
         baseStartX = paddingStart.toFloat()
         baseEndX = (viewWidth - paddingEnd).toFloat()
     }
 
     private fun calculateIndicatorSize() {
-        indicatorWidth = indicatorDrawable?.intrinsicWidth ?: 0
-        indicatorHeight = indicatorDrawable?.intrinsicHeight ?: 0
+        val drawable = indicatorDrawable
+        if (drawable != null) {
+            if (indicatorWidth > 0) {
+                finalIndicatorWidth = indicatorWidth
+                finalIndicatorHeight = indicatorWidth * drawable.intrinsicHeight / drawable.intrinsicWidth
+            } else {
+                finalIndicatorWidth = drawable.intrinsicWidth
+                finalIndicatorHeight = drawable.intrinsicHeight
+            }
+        } else {
+            finalIndicatorWidth = 0
+            finalIndicatorHeight = 0
+        }
     }
 
     internal class SavedState : BaseSavedState {
-//        var value: Int = 0 //this will store the current value from ValueBar
+        //        var value: Int = 0 //this will store the current value from ValueBar
         var baseColor = 0
-        var progressColor =0
+        var progressColor = 0
         var indicatorPadding = 0
         var progressLineWidth = 0
         var percentage = 0f
