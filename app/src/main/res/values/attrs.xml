@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="BatuProgressView">
         <attr name="indicator" format="reference" />
+        <attr name="indicatorWidth" format="dimension"/>
         <attr name="indicatorPadding" format="dimension"/>
         <attr name="progressLineWidth" format="dimension"/>
         <attr name="baseColor" format="color"/>
