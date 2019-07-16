@@ -123,7 +123,13 @@ class SlotFlyView2 @JvmOverloads constructor(
         currentValue = 0
     }
 
-    fun startRolling(action: (() -> Unit)? = null) {
+    fun finalPosition() {
+        post {
+            currentValue = maxEndAnimValue + maxProgressAnimValue
+        }
+    }
+
+    fun startRolling(finishedListener: (() -> Unit)? = null) {
 
         val animatorSet = AnimatorSet().apply {
             playSequentially(
@@ -143,12 +149,14 @@ class SlotFlyView2 @JvmOverloads constructor(
                 }
             )
             doOnEnd {
-                action?.invoke()
+                finishedListener?.invoke()
             }
         }
 
         animatorSet.start()
     }
+
+    fun isReady() = !bitmaps.isNullOrEmpty()
 
     private fun calculatePosition() {
 

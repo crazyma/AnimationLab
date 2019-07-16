@@ -9,9 +9,10 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
-import com.crazyma.batuanimlab.R
 import android.os.Parcel
 import android.os.Parcelable
+import com.crazyma.batuanimlab.R
+
 
 class BatuProgressView @JvmOverloads constructor(
     context: Context,
@@ -152,8 +153,31 @@ class BatuProgressView @JvmOverloads constructor(
         calculateProgressPosition(percentage)
     }
 
-    override fun onSaveInstanceState(): Parcelable? {
-        return super.onSaveInstanceState()
+    override fun onSaveInstanceState(): Parcelable {
+        val savedState = SavedState(super.onSaveInstanceState()!!)
+        savedState.apply{
+            baseColor = this@BatuProgressView.baseColor
+            progressColor = this@BatuProgressView.progressColor
+            indicatorPadding = this@BatuProgressView.indicatorPadding
+            progressLineWidth = this@BatuProgressView.progressLineWidth
+            percentage = this@BatuProgressView.percentage
+        }
+        return savedState
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable) {
+        if (state is SavedState) {
+            super.onRestoreInstanceState(state.superState)
+            state.run{
+                 this@BatuProgressView.baseColor = baseColor
+                 this@BatuProgressView.progressColor = progressColor
+                 this@BatuProgressView.indicatorPadding = indicatorPadding
+                 this@BatuProgressView.progressLineWidth = progressLineWidth
+                 this@BatuProgressView.percentage = percentage
+            }
+        } else {
+            super.onRestoreInstanceState(state)
+        }
     }
 
     private fun calculateProgressPosition(percentage: Float) {
@@ -174,17 +198,30 @@ class BatuProgressView @JvmOverloads constructor(
     }
 
     internal class SavedState : BaseSavedState {
-        var value: Int = 0 //this will store the current value from ValueBar
+//        var value: Int = 0 //this will store the current value from ValueBar
+        var baseColor = 0
+        var progressColor =0
+        var indicatorPadding = 0
+        var progressLineWidth = 0
+        var percentage = 0f
 
         constructor(source: Parcel) : super(source) {
-            value = source.readInt()
+            baseColor = source.readInt()
+            progressColor = source.readInt()
+            indicatorPadding = source.readInt()
+            progressLineWidth = source.readInt()
+            percentage = source.readFloat()
         }
 
         constructor(superState: Parcelable) : super(superState)
 
         override fun writeToParcel(out: Parcel, flags: Int) {
             super.writeToParcel(out, flags)
-            out.writeInt(value)
+            out.writeInt(baseColor)
+            out.writeInt(progressColor)
+            out.writeInt(indicatorPadding)
+            out.writeInt(progressLineWidth)
+            out.writeFloat(percentage)
         }
 
         companion object {
