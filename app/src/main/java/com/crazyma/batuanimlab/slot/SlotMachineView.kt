@@ -71,6 +71,21 @@ class SlotMachineView @JvmOverloads constructor(
         setupLaunchButton()
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+
+        val finalSize = when (widthMode) {
+            MeasureSpec.EXACTLY -> widthSize
+            else -> Math.min(widthSize, slotMachineImageView?.drawable?.intrinsicWidth ?: 360)
+        }
+
+        super.onMeasure(
+            MeasureSpec.makeMeasureSpec(finalSize, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(finalSize, MeasureSpec.EXACTLY)
+        )
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
