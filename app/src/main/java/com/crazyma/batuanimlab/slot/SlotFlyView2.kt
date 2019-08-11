@@ -3,8 +3,10 @@ package com.crazyma.batuanimlab.slot
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.drawable.Drawable
+import android.graphics.Paint
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -12,16 +14,15 @@ import android.view.animation.OvershootInterpolator
 import androidx.core.animation.doOnEnd
 
 /**
- * 10 icon per second
+ * support bitmap
  */
-class SlotFlyView @JvmOverloads constructor(
+class SlotFlyView2 @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
     companion object {
-
         const val DURATION_PROGRESS_ONE = 1
         const val DURATION_PROGRESS_TWO = 2
         const val DURATION_PROGRESS_THREE = 3
@@ -55,14 +56,13 @@ class SlotFlyView @JvmOverloads constructor(
             generateOrder()
         }
 
-    var drawableResIds: List<Int>? = null
+    var bitmaps: List<Bitmap>? = null
         set(value) {
             field = value
-            generateDrawables()
             generateOrder()
         }
 
-    var endDrawableIndex = 0
+    var endBitmapIndex = 0
         set(value) {
             field = value
             generateOrder()
@@ -81,12 +81,14 @@ class SlotFlyView @JvmOverloads constructor(
         }
 
     private var indexList: List<Int>? = null
-    private val drawables = mutableListOf<Drawable>()
-    private var firstVisibleDrawable: Drawable? = null
-    private var secondVisibleDrawable: Drawable? = null
+    private var firstVisibleBitmap: Bitmap? = null
+    private var secondVisibleBitmap: Bitmap? = null
 
     private var maxProgressAnimValue = 0
     private var maxEndAnimValue = 0
+    private var paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var firstRect = Rect()
+    private var secondRect = Rect()
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -108,22 +110,26 @@ class SlotFlyView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        firstVisibleDrawable?.run {
-            setBounds(iconLeft, firstIconPositionY, iconRight, (firstIconPositionY + iconHeight))
-            draw(canvas)
+        firstVisibleBitmap?.run {
+            canvas.drawBitmap(this, null, firstRect, paint)
         }
 
-        secondVisibleDrawable?.run {
-            setBounds(iconLeft, secondIconPositionY, iconRight, (secondIconPositionY + iconHeight))
-            draw(canvas)
+        secondVisibleBitmap?.run {
+            canvas.drawBitmap(this, null, secondRect, paint)
         }
     }
 
-    fun initPosition(){
+    fun initPosition() {
         currentValue = 0
     }
 
-    fun startRolling(action: (() -> Unit)? = null) {
+    fun finalPosition() {
+        post {
+            currentValue = maxEndAnimValue + maxProgressAnimValue
+        }
+    }
+
+    fun startRolling(finishedListener: (() -> Unit)? = null) {
 
         val animatorSet = AnimatorSet().apply {
             playSequentially(
@@ -143,14 +149,17 @@ class SlotFlyView @JvmOverloads constructor(
                 }
             )
             doOnEnd {
-                action?.invoke()
+                finishedListener?.invoke()
             }
         }
 
         animatorSet.start()
     }
 
+    fun isReady() = !bitmaps.isNullOrEmpty()
+
     private fun calculatePosition() {
+
         if (heightSize == 0) return
 
         quotient = currentValue / heightSize
@@ -160,64 +169,65 @@ class SlotFlyView @JvmOverloads constructor(
             firstIconPositionY = startY - reminder
             secondIconPositionY = firstIconPositionY + iconHeight + interval
 
-            firstVisibleDrawable = getVisibleDrawable(quotient)
-            secondVisibleDrawable = getVisibleDrawable(quotient + 1)
+            firstVisibleBitmap = getVisibleBitmap(quotient)
+            secondVisibleBitmap = getVisibleBitmap(quotient + 1)
         } else {                    //  odd, mean: second on top
             secondIconPositionY = startY - reminder
             firstIconPositionY = secondIconPositionY + iconHeight + interval
 
-            secondVisibleDrawable = getVisibleDrawable(quotient)
-            firstVisibleDrawable = getVisibleDrawable(quotient + 1)
+            secondVisibleBitmap = getVisibleBitmap(quotient)
+            firstVisibleBitmap = getVisibleBitmap(quotient + 1)
         }
-    }
 
-    private fun generateDrawables() {
-        drawables.clear()
-        drawableResIds?.forEach { drawableResId ->
-            drawables.add(resources.getDrawable(drawableResId, null))
-        }
+        firstRect = Rect(iconLeft, firstIconPositionY, iconRight, (firstIconPositionY + iconHeight))
+        secondRect = Rect(iconLeft, secondIconPositionY, iconRight, (secondIconPositionY + iconHeight))
     }
 
     private fun generateOrder() {
-        if (drawables.size > 0) {
-            val indexList = mutableListOf<Int>()
-            generateProgressOrder(indexList)
-            generateEndOrder(indexList)
+        bitmaps?.run {
+            if (size > 0) {
+                val indexList = mutableListOf<Int>()
+                generateProgressOrder(this, indexList)
+                generateEndOrder(this, indexList)
 
-            this.indexList = indexList
-            calculateMaxAnimationValue()
+                this@SlotFlyView2.indexList = indexList
+                calculateMaxAnimationValue()
+            }
         }
     }
 
-    private fun generateProgressOrder(indexList: MutableList<Int>) {
-        progressIconCount = (progressDuration * 25 / drawables.size) * drawables.size
-        for (i in 0 until progressIconCount) {
-            indexList.add(i % drawables.size)
+    private fun generateProgressOrder(bitmaps: List<Bitmap>, indexList: MutableList<Int>) {
+        if (bitmaps.isNotEmpty()) {
+            progressIconCount = (progressDuration * 25 / bitmaps.size) * bitmaps.size
+            for (i in 0 until progressIconCount) {
+                indexList.add(i % bitmaps.size)
+            }
         }
     }
 
-    private fun generateEndOrder(indexList: MutableList<Int>) {
+    private fun generateEndOrder(bitmaps: List<Bitmap>, indexList: MutableList<Int>) {
 
-        if (endDrawableIndex < 0 || endDrawableIndex >= drawables.size)
-            endDrawableIndex = 0
+        if (endBitmapIndex < 0 || endBitmapIndex >= bitmaps.size)
+            endBitmapIndex = 0
 
-        endIconCount = (DURATION_END * 10 / drawables.size) * drawables.size
+        endIconCount = (DURATION_END * 10 / bitmaps.size) * bitmaps.size
         val list = mutableListOf<Int>()
         for (i in 0 until endIconCount) {
-            list.add((endDrawableIndex + i) % drawables.size)
+            list.add((endBitmapIndex + i) % bitmaps.size)
         }
         list.reverse()
 
         indexList.addAll(list)
     }
 
-    private fun getVisibleDrawable(index: Int): Drawable? {
+    private fun getVisibleBitmap(index: Int): Bitmap? {
         val indexList = this.indexList
+        val bitmaps = this.bitmaps
 
-        return if (!indexList.isNullOrEmpty() && drawables.isNotEmpty() &&
+        return if (!indexList.isNullOrEmpty() && !bitmaps.isNullOrEmpty() &&
             index >= 0 && index < indexList.size
         ) {
-            drawables[indexList[index]]
+            bitmaps[indexList[index]]
         } else {
             null
         }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BatuProgressView">
+        <attr name="indicator" format="reference" />
+        <attr name="indicatorWidth" format="dimension"/>
+        <attr name="indicatorPadding" format="dimension"/>
+        <attr name="progressLineWidth" format="dimension"/>
+        <attr name="baseColor" format="color"/>
+        <attr name="progressColor" format="color"/>
+    </declare-styleable>
+    <declare-styleable name="ClipView">
+        <attr name="isClipped" format="boolean"/>
+        <attr name="isPatternShowed" format="boolean"/>
+    </declare-styleable>
+
+</resources>

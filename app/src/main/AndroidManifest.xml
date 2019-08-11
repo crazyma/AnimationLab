@@ -30,6 +30,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".progress.BatuProgressViewActivity" />
+        <activity android:name=".inner_trans.InnerTransitionActivity"
+            android:theme="@style/AppTheme.NoStatus.NoNavigation"/>
     </application>
 
 </manifest>
