@@ -6,6 +6,7 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.crazyma.batuanimlab.R
 import kotlinx.android.synthetic.main.activity_shiny_mask.*
+import android.graphics.Paint.ANTI_ALIAS_FLAG
 
 class ShinyMaskActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,21 +25,25 @@ class ShinyMaskActivity : AppCompatActivity() {
 
         canvas.drawBitmap(originBitmap, 0f, 0f, null)
         val shaderPaint = Paint()
-        val linearGradient =
-            LinearGradient(0f, 0f, 0f, originBitmap.height + 1f, 0x7fffffff, 0x00ffffff, Shader.TileMode.MIRROR)
 
         val centerX = originBitmap.width * 0.5f
         val centerY = originBitmap.height * 0.5f
         val radius = originBitmap.width * 0.25f
 
-        val colorArray = intArrayOf(Color.TRANSPARENT, Color.TRANSPARENT, Color.WHITE)
+        val colorArray = intArrayOf(Color.WHITE,Color.WHITE, Color.TRANSPARENT )
         val positionArray = floatArrayOf(0f, 0.25f, 1f)
 
         val radialGradient = RadialGradient(centerX, centerY, radius, colorArray, positionArray, Shader.TileMode.CLAMP)
 
         shaderPaint.shader = radialGradient
-        shaderPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
         canvas.drawRect(0f, 0f, originBitmap.width.toFloat(), originBitmap.height.toFloat(), shaderPaint)
+
+        val paint = Paint(ANTI_ALIAS_FLAG)
+        paint.color = Color.WHITE
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OUT)
+
+        canvas.drawRect(0f,0f,centerX,centerY,paint)
+
         return finalBitmap
     }
 
