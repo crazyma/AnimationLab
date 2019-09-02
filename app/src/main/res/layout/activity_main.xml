@@ -12,10 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
         android:onClick="buttonClicked"
         android:text="翻卡片"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,40 +21,28 @@
         android:id="@+id/slotButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
         android:onClick="buttonClicked"
         android:text="老虎"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardFlipButton" />
+        app:layout_constraintStart_toEndOf="@+id/cardFlipButton"
+        app:layout_constraintTop_toTopOf="@+id/cardFlipButton" />
 
     <Button
         android:id="@+id/sprinkleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
         android:onClick="buttonClicked"
         android:text="撒花"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/slotButton" />
+        app:layout_constraintStart_toEndOf="@+id/slotButton"
+        app:layout_constraintTop_toTopOf="@+id/slotButton" />
 
     <Button
         android:id="@+id/progressButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
         android:onClick="buttonClicked"
         android:text="進度條"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sprinkleButton" />
+        app:layout_constraintStart_toEndOf="@+id/sprinkleButton"
+        app:layout_constraintTop_toTopOf="@+id/sprinkleButton" />
 
     <Button
         android:id="@+id/innerTransButton"
@@ -70,4 +56,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressButton" />
+
+    <Button
+        android:id="@+id/cropRowButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reaction Icon Crop"
+        android:onClick="buttonClicked"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/innerTransButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>
