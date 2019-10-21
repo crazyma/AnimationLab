@@ -40,6 +40,8 @@ class GalaxyView @JvmOverloads constructor(
     private val animMatrices = mutableListOf<Matrix>()
     private var animator: ValueAnimator? = null
 
+    private var diagonalStartY = context.resources.displayMetrics.density * 300
+
     init {
         initGalaxyDrawable()
     }
@@ -67,7 +69,7 @@ class GalaxyView @JvmOverloads constructor(
         while (count * galaxyDrawableWidth < diagonalLength) {
             count += 1
         }
-        rotateAngle = atan(h.toDouble() / w.toDouble()) * 180 / Math.PI
+        rotateAngle = atan(diagonalStartY.toDouble() / w.toDouble()) * 180 / Math.PI
         animEndValue = (count - 1) * galaxyDrawableWidth.toFloat()
 
         prepareMatrices(count)
