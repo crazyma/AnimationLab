@@ -27,7 +27,6 @@ class GalaxyView @JvmOverloads constructor(
         private const val ANIM_INTERVAL = 10 * 1000L
     }
 
-
     private lateinit var greenGalaxyDrawable: Drawable
     private lateinit var blueGalaxyDrawable: Drawable
 
@@ -38,8 +37,8 @@ class GalaxyView @JvmOverloads constructor(
 
     private var animStartValue = 0f
     private var animEndValue = 0f
-
     private val animMatrices = mutableListOf<Matrix>()
+    private var animator: ValueAnimator? = null
 
     init {
         initGalaxyDrawable()
@@ -72,6 +71,7 @@ class GalaxyView @JvmOverloads constructor(
         animEndValue = (count - 1) * galaxyDrawableWidth.toFloat()
 
         prepareMatrices(count)
+        startAnim()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -84,8 +84,14 @@ class GalaxyView @JvmOverloads constructor(
         }
     }
 
+    override fun onDetachedFromWindow() {
+        animator?.cancel()
+        super.onDetachedFromWindow()
+    }
+
     fun startAnim() {
-        ValueAnimator.ofFloat(animStartValue, animEndValue).apply {
+        animator?.cancel()
+        animator = ValueAnimator.ofFloat(animStartValue, animEndValue).apply {
             duration = ANIM_INTERVAL
             repeatCount = -1
             interpolator = LinearInterpolator()
@@ -98,7 +104,8 @@ class GalaxyView @JvmOverloads constructor(
 
                 postInvalidate()
             }
-        }.start()
+            start()
+        }
     }
 
     private fun prepareMatrices(count: Int) {
