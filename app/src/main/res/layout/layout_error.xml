@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:id="@+id/errorLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.3"
+        android:orientation="vertical"
+        android:background="@android:color/holo_blue_bright"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/errorImageView"
+            android:layout_width="wrap_content"
+            android:background="@android:color/holo_green_light"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/dialog_error_title"
+            android:src="@drawable/ic_image_empty_light_error" />
+
+        <TextView
+            android:id="@+id/errorTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="@string/error_title"
+            android:background="@android:color/holo_blue_light"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="@dimen/text_body_1" />
+
+        <TextView
+            android:id="@+id/errorMessageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:textColor="?android:textColorSecondary"
+            android:textSize="@dimen/text_body_1"
+            tools:text="@string/lorem_error_2" />
+
+        <TextView
+            android:id="@+id/errorLogTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="?android:textColorHint"
+            android:textSize="@dimen/text_caption"
+            android:visibility="gone"
+            tools:text="@string/lorem_error" />
+
+        <Button
+            android:id="@+id/errorActionButton"
+            style="?borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_orange_light"
+            android:layout_marginTop="16dp"
+            android:text="@string/reload"
+            android:textColor="?colorPrimary"
+            android:textSize="@dimen/text_body_2" />
+    </LinearLayout>
+
+</ScrollView>
