@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.crazyma.batuanimlab.crop_row.CropRowActivity
+import com.crazyma.batuanimlab.galaxy.GalaxyActivity
 import com.crazyma.batuanimlab.inner_trans.InnerTransitionActivity
 import com.crazyma.batuanimlab.progress.BatuProgressViewActivity
 import com.crazyma.batuanimlab.slot.SlotActivity
@@ -36,6 +37,9 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.cropRowButton -> {
                 startActivity(Intent(this@MainActivity, CropRowActivity::class.java))
+            }
+            R.id.galaxyButton -> {
+                startActivity(Intent(this@MainActivity, GalaxyActivity::class.java))
             }
         }
     }
