@@ -20,4 +20,36 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
+    <style name="ShapeAppearanceOverlay.Corner.50Percent" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Corner.8dp" parent="">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.CornerCut.16dp" parent="">
+        <item name="cornerSize">16dp</item>
+        <item name="cornerFamily">cut</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.CornerCut.LeftTop.16dp" parent="">
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerFamilyTopRight">cut</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Corner.Right.16dp" parent="">
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeBottomRight">16dp</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Corner.Mess" parent="">
+        <item name="cornerSizeTopRight">50%</item>
+        <item name="cornerSizeBottomRight">16dp</item>
+        <item name="cornerFamilyBottomRight">cut</item>
+        <item name="cornerSizeTopLeft">32dp</item>
+        <item name="cornerSizeBottomLeft">24dp</item>
+        <item name="cornerFamilyTopLeft">cut</item>
+    </style>
+
 </resources>
