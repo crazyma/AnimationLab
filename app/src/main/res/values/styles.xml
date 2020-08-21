@@ -44,7 +44,7 @@
     </style>
 
     <style name="ShapeAppearanceOverlay.Corner.Mess" parent="">
-        <item name="cornerSizeTopRight">8dp</item>
+        <item name="cornerSizeTopRight">50%</item>
         <item name="cornerSizeBottomRight">16dp</item>
         <item name="cornerFamilyBottomRight">cut</item>
         <item name="cornerSizeTopLeft">32dp</item>
