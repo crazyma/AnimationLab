@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">BatuAnimLab</string>
     <string name="slot">試手氣</string>
+
+    <string name="dialog_error_title">哎呀！發生了一些錯誤</string>
+    <string name="lorem_error">這裡是錯誤訊息 (1287)\nError message</string>
+    <string name="lorem_error_2">Belly 抱歉...目前網路不穩或伺服器忙碌中，喝杯香蕉牛奶再重新試試吧！</string>
+    <string name="error_title">發生錯誤</string>
+    <string name="reload">重新載入</string>
 </resources>
