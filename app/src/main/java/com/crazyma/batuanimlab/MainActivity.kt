@@ -3,12 +3,9 @@ package com.crazyma.batuanimlab
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ImageSpan
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import com.crazyma.batuanimlab.crop_row.CropRowActivity
 import com.crazyma.batuanimlab.galaxy.GalaxyActivity
 import com.crazyma.batuanimlab.image_view.ShapeableImageViewActivity
@@ -56,12 +53,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun test(){
+        run loop@{
+            listOf<Int>(1, 2, 3, 4, 5, 6, 6, 7, 8, 8, 89).apply {
+                forEachIndexed { index, i ->
+                    if (i == 6) {
+                        return@loop
+                    }
+                    Log.w("badu", "value: $i")
+                }
+            }
+        }
+
+
+
         dividerLayout.dividerResId = R.drawable.dot
         Handler().postDelayed({
-            dividerLayout.addText("123")
-        },1000)
-        Handler().postDelayed({
-            dividerLayout.setTexts(listOf("ABC","XXX"))
+            dividerLayout.setMessages(listOf("ABC","XXadfasdfX","1","Batu Tasvaluan"))
         },2000)
     }
 }

@@ -106,4 +106,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/testTextView" />
+
+    <View
+        android:layout_width="12px"
+        android:layout_height="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dividerLayout"
+        android:background="#000"/>
+
+    <View
+        android:layout_width="22px"
+        android:layout_height="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/dividerLayout"
+        android:background="#000"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

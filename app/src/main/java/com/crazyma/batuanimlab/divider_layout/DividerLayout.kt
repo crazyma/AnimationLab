@@ -1,8 +1,11 @@
 package com.crazyma.batuanimlab.divider_layout
 
 import android.content.Context
+import android.graphics.Rect
+import android.os.Handler
 import android.os.Parcel
 import android.os.Parcelable
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.Log
 import android.widget.LinearLayout
@@ -30,7 +33,6 @@ class DividerLayout @JvmOverloads constructor(
         set(value) {
             field = value
             padding = calculateIntervalPadding(value)
-            Log.d("badu", "padding: $padding")
         }
 
     private val strings = mutableListOf<String>()
@@ -68,19 +70,18 @@ class DividerLayout @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        Log.d("badu", "onSizeChanged: w: $w, h: $h")
+
     }
 
-    fun addText(message: String) {
+    fun addMessage(message: String) {
         val count = storeMessage(message)
         populateTextView(message, count > 1)
     }
 
-    fun setTexts(messages: Collection<String>) {
-        strings.clear()
-        strings.addAll(messages)
-
+    fun setMessages(messages: List<String>) {
+        storeMessage(messages)
         populateTextViews(strings)
+        Log.d("badu", "width: $width")
     }
 
     fun clear() {
@@ -93,14 +94,56 @@ class DividerLayout @JvmOverloads constructor(
         return strings.size
     }
 
+    private fun storeMessage(messages: List<String>) {
+        strings.clear()
+        strings.addAll(messages)
+    }
+
     private fun clearMessage() {
         strings.clear()
     }
 
     private fun populateTextViews(messages: List<String>) {
+        val bound = Rect()
+        val textPaint = TextView(context).paint
+
+        messages.forEach {
+            textPaint.getTextBounds(it, 0, it.length, bound)
+            Log.d("badu", "bound width: ${bound.width()}")
+        }
+
+        val layoutTotalWidth = width
+        var w = 0
+        var boundedIndex = -1
+        var showLastBoundedMessage = false
+
+        run loop@{
+            messages.forEachIndexed { i, message ->
+                if (i != 0) {
+                    w += intervalWidth
+                }
+                if (w >= layoutTotalWidth) {
+                    boundedIndex = i
+                    showLastBoundedMessage = false
+                    return@loop
+                }
+
+                textPaint.getTextBounds(message, 0, message.length, bound)
+                w += bound.width()
+
+                if (w >= layoutTotalWidth) {
+                    boundedIndex = i
+                    showLastBoundedMessage = true
+                    return@loop
+                }
+            }
+        }
+
         removeAllViews()
-        messages.forEachIndexed { index, message ->
-            populateTextView(message, index > 0)
+        messages.forEachIndexed { i, message ->
+            if (boundedIndex != -1 && i >= boundedIndex && !showLastBoundedMessage) return@forEachIndexed
+
+            populateTextView(message, i > 0)
         }
     }
 
@@ -109,7 +152,8 @@ class DividerLayout @JvmOverloads constructor(
             text = message
             compoundDrawablePadding = padding
             val drawable = ContextCompat.getDrawable(context, dividerResId)
-
+            maxLines = 1
+            ellipsize = TextUtils.TruncateAt.END
             setCompoundDrawablesWithIntrinsicBounds(
                 if (drawablePrefix) dividerResId else 0,
                 0,
@@ -117,12 +161,18 @@ class DividerLayout @JvmOverloads constructor(
                 0
             )
         }
+
         val params = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
             if (drawablePrefix) {
                 marginStart = (4 * context.resources.displayMetrics.density).toInt()
             }
         }
         addView(textView, params)
+
+        Handler().postDelayed({
+            Log.d("badu", "$message: x:${textView.x}, y:${textView.y}, width: ${textView.width}")
+        }, 240)
+
     }
 
     private fun calculateIntervalPadding(@DrawableRes drawableResId: Int): Int {
