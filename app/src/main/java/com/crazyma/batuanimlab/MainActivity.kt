@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import com.crazyma.batuanimlab.crop_row.CropRowActivity
 import com.crazyma.batuanimlab.galaxy.GalaxyActivity
+import com.crazyma.batuanimlab.image_view.ShapeableImageViewActivity
 import com.crazyma.batuanimlab.inner_trans.InnerTransitionActivity
 import com.crazyma.batuanimlab.progress.BatuProgressViewActivity
 import com.crazyma.batuanimlab.slot.SlotActivity
@@ -40,6 +41,9 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.galaxyButton -> {
                 startActivity(Intent(this@MainActivity, GalaxyActivity::class.java))
+            }
+            R.id.shapeableButton -> {
+                startActivity(Intent(this@MainActivity, ShapeableImageViewActivity::class.java))
             }
         }
     }
