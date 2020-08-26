@@ -53,6 +53,7 @@
         android:layout_marginEnd="8dp"
         android:onClick="buttonClicked"
         android:text="Inner Transition"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressButton" />
@@ -61,8 +62,8 @@
         android:id="@+id/cropRowButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Reaction Icon Crop"
         android:onClick="buttonClicked"
+        android:text="Reaction Icon Crop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/innerTransButton" />
@@ -71,8 +72,9 @@
         android:id="@+id/galaxyButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Galaxy View"
         android:onClick="buttonClicked"
+        android:text="Galaxy View"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cropRowButton" />
@@ -82,7 +84,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Shapeable Test"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/galaxyButton" />
+
+    <TextView
+        android:id="@+id/testTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shapeableButton" />
+
+    <com.crazyma.batuanimlab.divider_layout.DividerLayout
+        android:id="@+id/dividerLayout"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:background="#33000000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/testTextView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

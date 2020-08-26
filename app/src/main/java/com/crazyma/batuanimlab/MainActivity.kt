@@ -1,9 +1,14 @@
 package com.crazyma.batuanimlab
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ImageSpan
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.crazyma.batuanimlab.crop_row.CropRowActivity
 import com.crazyma.batuanimlab.galaxy.GalaxyActivity
 import com.crazyma.batuanimlab.image_view.ShapeableImageViewActivity
@@ -11,12 +16,14 @@ import com.crazyma.batuanimlab.inner_trans.InnerTransitionActivity
 import com.crazyma.batuanimlab.progress.BatuProgressViewActivity
 import com.crazyma.batuanimlab.slot.SlotActivity
 import com.crazyma.batuanimlab.sprinkle.SprinkleActivity
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        test()
     }
 
     fun buttonClicked(v: View) {
@@ -46,5 +53,15 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this@MainActivity, ShapeableImageViewActivity::class.java))
             }
         }
+    }
+
+    private fun test(){
+        dividerLayout.dividerResId = R.drawable.dot
+        Handler().postDelayed({
+            dividerLayout.addText("123")
+        },1000)
+        Handler().postDelayed({
+            dividerLayout.setTexts(listOf("ABC","XXX"))
+        },2000)
     }
 }
