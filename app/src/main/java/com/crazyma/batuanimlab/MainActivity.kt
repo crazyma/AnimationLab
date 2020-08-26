@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
         dividerLayout.dividerResId = R.drawable.dot
         Handler().postDelayed({
-            dividerLayout.setMessages(listOf("ABC","XXadfasdfX","1","Batu Tasvaluan"))
+            dividerLayout.setMessages(listOf("ABC","Langui Tasvaluan","1234","Batu Tasvaluan"))
         },2000)
     }
 }
