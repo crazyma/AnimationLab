@@ -1,17 +1,19 @@
 package com.crazyma.batuanimlab.divider_layout
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Rect
-import android.os.Handler
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.util.Log
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
+import androidx.annotation.StyleRes
 import androidx.core.content.ContextCompat
+import com.crazyma.batuanimlab.R
 
 /**
  * @author Batu
@@ -35,12 +37,32 @@ class DividerLayout @JvmOverloads constructor(
             padding = calculateIntervalPadding(value)
         }
 
+    @ColorInt
+    var textColor: Int = 0
+
+    @StyleRes
+    var textAppearanceId: Int = 0
+
     private val strings = mutableListOf<String>()
     private var padding: Int = 0
 
     init {
         orientation = HORIZONTAL
         intervalWidth = (DEFAULT_INTERVAL_UNIT * context.resources.displayMetrics.density).toInt()
+
+        val a = context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.DividerLayout,
+            0, 0
+        )
+
+        try {
+            textAppearanceId = a.getResourceId(R.styleable.DividerLayout_textAppearance, 0)
+            dividerResId = a.getResourceId(R.styleable.DividerLayout_divider, 0)
+            textColor = a.getColor(R.styleable.DividerLayout_textColor, Color.BLACK)
+        } finally {
+            a.recycle()
+        }
     }
 
     override fun onSaveInstanceState(): Parcelable {
@@ -48,6 +70,9 @@ class DividerLayout @JvmOverloads constructor(
         savedState.apply {
             strings = this@DividerLayout.strings
             dividerResId = this@DividerLayout.dividerResId
+            textColor = this@DividerLayout.textColor
+            textAppearanceId = this@DividerLayout.textAppearanceId
+            intervalWidth = this@DividerLayout.intervalWidth
         }
         return savedState
     }
@@ -61,6 +86,9 @@ class DividerLayout @JvmOverloads constructor(
                 addAll(state.strings)
             }
             dividerResId = state.dividerResId
+            textColor = state.textColor
+            textAppearanceId = state.textAppearanceId
+            intervalWidth = state.intervalWidth
 
             populateTextViews(strings)
         } else {
@@ -68,30 +96,14 @@ class DividerLayout @JvmOverloads constructor(
         }
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-
-    }
-
-    fun addMessage(message: String) {
-        val count = storeMessage(message)
-        populateTextView(message, count > 1)
-    }
-
     fun setMessages(messages: List<String>) {
         storeMessage(messages)
         populateTextViews(strings)
-        Log.d("badu", "width: $width")
     }
 
     fun clear() {
         clearMessage()
         clearAllTextView()
-    }
-
-    private fun storeMessage(message: String): Int {
-        strings.add(message)
-        return strings.size
     }
 
     private fun storeMessage(messages: List<String>) {
@@ -109,7 +121,6 @@ class DividerLayout @JvmOverloads constructor(
 
         messages.forEach {
             textPaint.getTextBounds(it, 0, it.length, bound)
-            Log.d("badu", "bound width: ${bound.width()}")
         }
 
         val layoutTotalWidth = width
@@ -150,6 +161,18 @@ class DividerLayout @JvmOverloads constructor(
     private fun populateTextView(message: String, drawablePrefix: Boolean) {
         val textView = TextView(context).apply {
             text = message
+            if (textAppearanceId != 0) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    setTextAppearance(textAppearanceId)
+                } else {
+                    setTextAppearance(context, textAppearanceId)
+                }
+            }
+
+            if (textColor != 0) {
+                setTextColor(textColor)
+            }
+
             compoundDrawablePadding = padding
             val drawable = ContextCompat.getDrawable(context, dividerResId)
             maxLines = 1
@@ -168,11 +191,6 @@ class DividerLayout @JvmOverloads constructor(
             }
         }
         addView(textView, params)
-
-        Handler().postDelayed({
-            Log.d("badu", "$message: x:${textView.x}, y:${textView.y}, width: ${textView.width}")
-        }, 240)
-
     }
 
     private fun calculateIntervalPadding(@DrawableRes drawableResId: Int): Int {
@@ -195,9 +213,20 @@ class DividerLayout @JvmOverloads constructor(
         @DrawableRes
         var dividerResId: Int = 0
 
+        @ColorInt
+        var textColor: Int = 0
+
+        @StyleRes
+        var textAppearanceId: Int = 0
+
+        var intervalWidth: Int = 0
+
         constructor(source: Parcel) : super(source) {
             source.readStringList(strings)
             dividerResId = source.readInt()
+            textColor = source.readInt()
+            textAppearanceId = source.readInt()
+            intervalWidth = source.readInt()
         }
 
         constructor(superState: Parcelable) : super(superState)
@@ -206,6 +235,9 @@ class DividerLayout @JvmOverloads constructor(
             super.writeToParcel(out, flags)
             out.writeStringList(strings)
             out.writeInt(dividerResId)
+            out.writeInt(textColor)
+            out.writeInt(textAppearanceId)
+            out.writeInt(intervalWidth)
         }
 
         companion object {
