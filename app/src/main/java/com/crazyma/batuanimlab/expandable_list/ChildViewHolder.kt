@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.crazyma.batuanimlab.R
+import kotlinx.android.synthetic.main.layout_list_child.view.*
 
 /**
  * @author Batu
@@ -12,12 +13,16 @@ import com.crazyma.batuanimlab.R
 class ChildViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     companion object {
         fun create(parent: ViewGroup) =
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.layout_list_child, parent, false)
+            ChildViewHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.layout_list_child, parent, false)
+            )
     }
 
-    fun bind() {
+    private val messageTextView = itemView.messageTextView!!
 
+    fun bind(message: String) {
+        messageTextView.text = message
     }
 
 }

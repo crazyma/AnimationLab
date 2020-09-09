@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.crazyma.batuanimlab.R
+import kotlinx.android.synthetic.main.layout_list_section.view.*
 
 /**
  * @author Batu
@@ -12,12 +13,16 @@ import com.crazyma.batuanimlab.R
 class SectionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     companion object {
         fun create(parent: ViewGroup) =
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.layout_list_section, parent, false)
+            SectionViewHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.layout_list_section, parent, false)
+            )
     }
 
-    fun bind(){
+    private val titleTextView = itemView.titleTextView!!
 
+    fun bind(title: String) {
+        titleTextView.text = title
     }
 
 }
