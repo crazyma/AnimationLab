@@ -12,10 +12,5 @@
         <attr name="isClipped" format="boolean"/>
         <attr name="isPatternShowed" format="boolean"/>
     </declare-styleable>
-    <declare-styleable name="DividerLayout">
-        <attr name="textAppearance" format="reference" />
-        <attr name="divider" format="reference" />
-        <attr name="textColor" format="color" />
-    </declare-styleable>
 
 </resources>
