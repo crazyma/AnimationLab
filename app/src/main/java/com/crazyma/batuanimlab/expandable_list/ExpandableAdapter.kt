@@ -1,6 +1,7 @@
 package com.crazyma.batuanimlab.expandable_list
 
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
 /**
@@ -25,11 +26,50 @@ class ExpandableAdapter(_sections: List<Item.SectionItem>? = null) :
     }
 
     private var items: List<Item>? = null
+        set(newItems) {
+            val oldItems = field
+            field = newItems
+            DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                override fun getOldListSize(): Int = oldItems?.size ?: 0
+
+                override fun getNewListSize(): Int = newItems?.size ?: 0
+
+                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                    val oldItem = oldItems!![oldItemPosition]
+                    val newItem = newItems!![newItemPosition]
+                    return oldItem.isItemTheSameWith(newItem)
+                }
+
+                override fun areContentsTheSame(
+                    oldItemPosition: Int,
+                    newItemPosition: Int
+                ): Boolean {
+                    val oldItem = oldItems!![oldItemPosition]
+                    val newItem = newItems!![newItemPosition]
+                    return oldItem.isContentTheSameWith(newItem)
+                }
+
+            }).dispatchUpdatesTo(this)
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             TYPE_SECTION -> {
-                SectionViewHolder.create(parent)
+                SectionViewHolder.create(parent) { adapterPosition ->
+                    val item = items!![adapterPosition]
+                    if (item is Item.SectionItem) {
+                        val index = sections?.indexOfFirst {
+                            it.id == item.id
+                        }
+                        val sections = sections
+                        if (index != null && sections != null) {
+                            val newSections = sections.toMutableList().apply {
+                                set(index, item.copy(isExpanding = !item.isExpanding))
+                            }
+                            this.sections = newSections
+                        }
+                    }
+                }
             }
             TYPE_CHILD -> {
                 ChildViewHolder.create(parent)

@@ -29,9 +29,16 @@ class ExpandableListActivity : AppCompatActivity() {
         for (i in 1..5) {
             val children = mutableListOf<Item.ChildItem>().apply {
                 for (j in 1..i)
-                    add(Item.ChildItem(j.toString()))
+                    add(
+                        Item.ChildItem(
+                            id = j.toLong(),
+                            parentId = i.toLong(),
+                            message = j.toString()
+                        )
+                    )
             }
             Item.SectionItem(
+                id = i.toLong(),
                 title = "Section No. $i",
                 isExpanding = i % 2 == 1,
                 children = children
