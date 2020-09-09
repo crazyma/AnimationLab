@@ -20,7 +20,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        test()
     }
 
     fun buttonClicked(v: View) {
@@ -50,25 +49,5 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this@MainActivity, ShapeableImageViewActivity::class.java))
             }
         }
-    }
-
-    private fun test(){
-        run loop@{
-            listOf<Int>(1, 2, 3, 4, 5, 6, 6, 7, 8, 8, 89).apply {
-                forEachIndexed { index, i ->
-                    if (i == 6) {
-                        return@loop
-                    }
-                    Log.w("badu", "value: $i")
-                }
-            }
-        }
-
-
-
-        dividerLayout.dividerResId = R.drawable.dot
-        Handler().postDelayed({
-            dividerLayout.setMessages(listOf("ABC","Langui Tasvaluan","1234","Batu Tasvaluan"))
-        },2000)
     }
 }
