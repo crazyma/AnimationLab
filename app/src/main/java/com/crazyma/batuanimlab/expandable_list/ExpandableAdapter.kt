@@ -56,7 +56,14 @@ class ExpandableAdapter(_sections: List<Item.SectionItem>? = null) :
         return when (viewType) {
             TYPE_SECTION -> {
                 SectionViewHolder.create(parent) { adapterPosition ->
-                    handleExpand(adapterPosition)
+                    val item = items!![adapterPosition] as Item.SectionItem
+                    if (item.children != null) {
+                        handleExpand(adapterPosition)
+                        item.clickEvent(item.id, false)
+                    } else {
+                        handleProgress(adapterPosition)
+                        item.clickEvent(item.id, true)
+                    }
                 }
             }
             TYPE_CHILD -> {
@@ -92,11 +99,34 @@ class ExpandableAdapter(_sections: List<Item.SectionItem>? = null) :
             sections?.forEach { section ->
                 add(section)
                 if (section.isExpanding) {
-                    section.children.forEach { child ->
+                    section.children?.forEach { child ->
                         add(child)
                     }
                 }
             }
+        }
+    }
+
+    private fun handleProgress(adapterPosition: Int) {
+        val item = items!![adapterPosition]
+        if (item is Item.SectionItem) {
+            val sections = sections ?: return
+            val selectedSection = sections.find { it.id == item.id } ?: return
+            val selectedIndex = sections.indexOfFirst { it.id == item.id }
+            val newSections = sections.toMutableList()
+
+            sections.forEachIndexed { index, section ->
+                if (index == selectedIndex) {
+                    newSections[selectedIndex] = selectedSection.copy(
+                        isProgress = true
+                    )
+                } else {
+                    newSections[index] = section.copy(
+                        isProgress = false
+                    )
+                }
+            }
+            this.sections = newSections
         }
     }
 
@@ -114,9 +144,15 @@ class ExpandableAdapter(_sections: List<Item.SectionItem>? = null) :
             } else {
                 sections.forEachIndexed { index, section ->
                     if (index == selectedIndex) {
-                        newSections[selectedIndex] = selectedSection.copy(isExpanding = true)
+                        newSections[selectedIndex] = selectedSection.copy(
+                            isExpanding = true,
+                            isProgress = false
+                        )
                     } else if (section.isExpanding) {
-                        newSections[index] = section.copy(isExpanding = false)
+                        newSections[index] = section.copy(
+                            isExpanding = false,
+                            isProgress = false
+                        )
                     }
                 }
             }

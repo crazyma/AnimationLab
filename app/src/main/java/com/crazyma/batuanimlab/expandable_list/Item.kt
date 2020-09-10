@@ -28,9 +28,10 @@ sealed class Item {
     data class SectionItem(
         val id: Long,
         val title: String,
-        val isExpanding: Boolean,
-        val isProgress: Boolean,
-        val children: List<ChildItem>
+        val isExpanding: Boolean = false,
+        val isProgress: Boolean = false,
+        val children: List<ChildItem>? = null,
+        val clickEvent: (sectionId: Long, needToFetchChildren: Boolean) -> Unit
     ) : Item() {
         override fun isItemTheSameWith(item: Item): Boolean {
             if (item !is SectionItem) return false
