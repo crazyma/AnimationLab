@@ -29,6 +29,7 @@ sealed class Item {
         val id: Long,
         val title: String,
         val isExpanding: Boolean,
+        val isProgress: Boolean,
         val children: List<ChildItem>
     ) : Item() {
         override fun isItemTheSameWith(item: Item): Boolean {

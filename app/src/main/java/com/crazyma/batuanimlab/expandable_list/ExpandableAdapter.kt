@@ -71,7 +71,7 @@ class ExpandableAdapter(_sections: List<Item.SectionItem>? = null) :
         when (getItemViewType(position)) {
             TYPE_SECTION -> {
                 item as Item.SectionItem
-                (holder as SectionViewHolder).bind(item.title, item.isExpanding)
+                (holder as SectionViewHolder).bind(item.title, item.isExpanding, item.isProgress)
             }
             TYPE_CHILD -> {
                 item as Item.ChildItem

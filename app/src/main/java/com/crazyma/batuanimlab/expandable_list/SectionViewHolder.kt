@@ -31,10 +31,23 @@ class SectionViewHolder(itemView: View, onItemClick: (Int) -> Unit) :
 
     private val titleTextView = itemView.titleTextView!!
     private val arrowImageView = itemView.arrowImageView!!
+    private val progressBar = itemView.progressBar!!
 
-    fun bind(title: String, isExpanding: Boolean) {
+    fun bind(
+        title: String,
+        isExpanding: Boolean,
+        isProgress: Boolean
+    ) {
         titleTextView.text = title
-        arrowImageView.animate().rotation(if (isExpanding) 180f else 0f)
+        arrowImageView.apply {
+            if (isProgress) {
+                visibility = View.INVISIBLE
+            } else {
+                visibility = View.VISIBLE
+                animate().rotation(if (isExpanding) 180f else 0f)
+            }
+        }
+        progressBar.visibility = if (isProgress) View.VISIBLE else View.INVISIBLE
     }
 
 }

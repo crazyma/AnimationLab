@@ -45,6 +45,7 @@ class ExpandableListActivity : AppCompatActivity() {
                 id = i.toLong(),
                 title = "Section No. $i",
                 isExpanding = i == 1,
+                isProgress = false,
                 children = children
             ).let {
                 sections.add(it)
