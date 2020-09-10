@@ -56,19 +56,7 @@ class ExpandableAdapter(_sections: List<Item.SectionItem>? = null) :
         return when (viewType) {
             TYPE_SECTION -> {
                 SectionViewHolder.create(parent) { adapterPosition ->
-                    val item = items!![adapterPosition]
-                    if (item is Item.SectionItem) {
-                        val index = sections?.indexOfFirst {
-                            it.id == item.id
-                        }
-                        val sections = sections
-                        if (index != null && sections != null) {
-                            val newSections = sections.toMutableList().apply {
-                                set(index, item.copy(isExpanding = !item.isExpanding))
-                            }
-                            this.sections = newSections
-                        }
-                    }
+                    handleExpand(adapterPosition)
                 }
             }
             TYPE_CHILD -> {
@@ -109,6 +97,30 @@ class ExpandableAdapter(_sections: List<Item.SectionItem>? = null) :
                     }
                 }
             }
+        }
+    }
+
+    private fun handleExpand(adapterPosition: Int) {
+        val item = items!![adapterPosition]
+        if (item is Item.SectionItem) {
+            val sections = sections ?: return
+            val selectedSection = sections.find { it.id == item.id } ?: return
+            val selectedIndex = sections.indexOfFirst { it.id == item.id }
+            val newSections = sections.toMutableList()
+
+            val wasExpanding = selectedSection.isExpanding
+            if (wasExpanding) {
+                newSections[selectedIndex] = selectedSection.copy(isExpanding = false)
+            } else {
+                sections.forEachIndexed { index, section ->
+                    if (index == selectedIndex) {
+                        newSections[selectedIndex] = selectedSection.copy(isExpanding = true)
+                    } else if (section.isExpanding) {
+                        newSections[index] = section.copy(isExpanding = false)
+                    }
+                }
+            }
+            this.sections = newSections
         }
     }
 }
