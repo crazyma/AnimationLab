@@ -2,6 +2,7 @@ package com.crazyma.batuanimlab.expandable_list
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DefaultItemAnimator
 import com.crazyma.batuanimlab.R
 import kotlinx.android.synthetic.main.activity_expandable_list.*
 
@@ -18,9 +19,12 @@ class ExpandableListActivity : AppCompatActivity() {
 
     private fun setupList() {
         val sections = generateSectionData()
-        val adapter = ExpandableAdapter(sections)
+        val adapter = ExpandableAdapter(sections).apply {}
         recyclerView.apply {
             this.adapter = adapter
+            itemAnimator = DefaultItemAnimator().apply {
+                supportsChangeAnimations = false
+            }
         }
     }
 
@@ -40,7 +44,7 @@ class ExpandableListActivity : AppCompatActivity() {
             Item.SectionItem(
                 id = i.toLong(),
                 title = "Section No. $i",
-                isExpanding = false,
+                isExpanding = i == 1,
                 children = children
             ).let {
                 sections.add(it)

@@ -1,6 +1,5 @@
 package com.crazyma.batuanimlab.expandable_list
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +23,6 @@ class SectionViewHolder(itemView: View, onItemClick: (Int) -> Unit) :
 
     init {
         itemView.setOnClickListener {
-            Log.d("badu", "111")
             if (adapterPosition >= 0) {
                 onItemClick(adapterPosition)
             }
@@ -32,9 +30,11 @@ class SectionViewHolder(itemView: View, onItemClick: (Int) -> Unit) :
     }
 
     private val titleTextView = itemView.titleTextView!!
+    private val arrowImageView = itemView.arrowImageView!!
 
-    fun bind(title: String) {
+    fun bind(title: String, isExpanding: Boolean) {
         titleTextView.text = title
+        arrowImageView.animate().rotation(if (isExpanding) 180f else 0f)
     }
 
 }
