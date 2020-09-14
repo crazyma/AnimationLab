@@ -130,6 +130,14 @@ class ExpandableAdapter(_sections: List<Item.SectionItem>? = null) :
         }
     }
 
+    fun expandForum(sectionId: Long){
+        items?.forEachIndexed { index, item ->
+            if(item is Item.SectionItem && item.id == sectionId){
+                handleExpand(index)
+            }
+        }
+    }
+
     private fun handleExpand(adapterPosition: Int) {
         val item = items!![adapterPosition]
         if (item is Item.SectionItem) {

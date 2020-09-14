@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicLong
 
 /**
  * @author Batu
@@ -12,6 +13,8 @@ import kotlinx.coroutines.launch
 class ExpandableListViewModel : ViewModel() {
 
     val sections = MutableLiveData<List<CategoryModel>>()
+    var fetchingForumId = AtomicLong(-1L)
+    var expandForumEvent = MutableLiveData<Long?>()
 
     fun fetchCategories() {
         viewModelScope.launch {
@@ -20,16 +23,36 @@ class ExpandableListViewModel : ViewModel() {
     }
 
     fun fetchForums(id: Long) {
+        fetchingForumId.set(id)
         viewModelScope.launch {
             val forums = apiFetchCell(id)
-            val updatedSection =
-                sections.value?.find { it.id == id }?.copy(forums = forums) ?: return@launch
-            val sectionIndex = sections.value?.indexOfFirst { it.id == id } ?: return@launch
+            if (fetchingForumId.compareAndSet(id, -1L)) {
+                val updatedSection =
+                    sections.value?.find { it.id == id }?.copy(forums = forums) ?: return@launch
+                val sectionIndex = sections.value?.indexOfFirst { it.id == id } ?: return@launch
 
-            val newSections = sections.value?.toMutableList() ?: return@launch
-            newSections[sectionIndex] = updatedSection
-            sections.value = newSections
+                val newSections = sections.value?.toMutableList() ?: return@launch
+                newSections[sectionIndex] = updatedSection
+                sections.value = newSections
+
+                sendExpandRequest(id)
+            }else{
+                val updatedSection =
+                    sections.value?.find { it.id == id }?.copy(forums = forums) ?: return@launch
+                val sectionIndex = sections.value?.indexOfFirst { it.id == id } ?: return@launch
+
+                val newSections = sections.value?.toMutableList() ?: return@launch
+                newSections[sectionIndex] = updatedSection
+                sections.value = newSections
+            }
         }
+    }
+
+    private suspend fun sendExpandRequest(id: Long){
+        expandForumEvent.value = id
+        //  TODO by Batu: reset value for testing
+        delay(1000)
+        expandForumEvent.value = null
     }
 
     private suspend fun apiFetchCategories(): List<CategoryModel> {
@@ -38,7 +61,7 @@ class ExpandableListViewModel : ViewModel() {
     }
 
     private suspend fun apiFetchCell(id: Long): List<ForumModel> {
-        delay(1500)
+        delay(3000)
         return generateCells(id)
     }
 
