@@ -36,7 +36,8 @@ class ExpandableListViewModel : ViewModel() {
                 sections.value = newSections
 
                 sendExpandRequest(id)
-            }else{
+            } else {
+                //  TODO by Batu: try to wrap this scrip to function or inline function
                 val updatedSection =
                     sections.value?.find { it.id == id }?.copy(forums = forums) ?: return@launch
                 val sectionIndex = sections.value?.indexOfFirst { it.id == id } ?: return@launch
@@ -48,7 +49,7 @@ class ExpandableListViewModel : ViewModel() {
         }
     }
 
-    private suspend fun sendExpandRequest(id: Long){
+    private suspend fun sendExpandRequest(id: Long) {
         expandForumEvent.value = id
         //  TODO by Batu: reset value for testing
         delay(1000)

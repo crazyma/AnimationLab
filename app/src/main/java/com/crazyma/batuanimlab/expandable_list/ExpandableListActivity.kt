@@ -1,7 +1,6 @@
 package com.crazyma.batuanimlab.expandable_list
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -29,14 +28,13 @@ class ExpandableListActivity : AppCompatActivity() {
     private fun setupViewModel() {
         viewModel.apply {
             sections.observe(this@ExpandableListActivity, Observer {
-                if(fetchingForumId.get() == -1L) {
+                if (fetchingForumId.get() == -1L) {
                     populateList(it)
                 }
             })
 
             expandForumEvent.observe(this@ExpandableListActivity, Observer {
-                if(it != null){
-                    Log.d("badu", "expanding forum id = $it")
+                if (it != null) {
                     adapter.expandForum(it)
                 }
             })
