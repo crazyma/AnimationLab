@@ -69,6 +69,16 @@
         app:layout_constraintTop_toBottomOf="@+id/innerTransButton" />
 
     <Button
+        android:id="@+id/expandableButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="buttonClicked"
+        android:text="Expandable"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cropRowButton" />
+
+    <Button
         android:id="@+id/galaxyButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -77,7 +87,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cropRowButton" />
+        app:layout_constraintTop_toBottomOf="@+id/expandableButton" />
 
     <Button
         android:id="@+id/shapeableButton"

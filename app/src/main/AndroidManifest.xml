@@ -42,6 +42,9 @@
         <activity android:name=".image_view.ShapeableImageViewActivity">
 
         </activity>
+        <activity android:name=".expandable_list.ExpandableListActivity">
+
+        </activity>
     </application>
 
 </manifest>
