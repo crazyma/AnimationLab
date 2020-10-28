@@ -2,18 +2,16 @@ package com.crazyma.batuanimlab
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.crazyma.batuanimlab.crop_row.CropRowActivity
+import com.crazyma.batuanimlab.expandable_list.ExpandableListActivity
 import com.crazyma.batuanimlab.galaxy.GalaxyActivity
 import com.crazyma.batuanimlab.image_view.ShapeableImageViewActivity
 import com.crazyma.batuanimlab.inner_trans.InnerTransitionActivity
 import com.crazyma.batuanimlab.progress.BatuProgressViewActivity
 import com.crazyma.batuanimlab.slot.SlotActivity
 import com.crazyma.batuanimlab.sprinkle.SprinkleActivity
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,6 +45,9 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.shapeableButton -> {
                 startActivity(Intent(this@MainActivity, ShapeableImageViewActivity::class.java))
+            }
+            R.id.expandableButton -> {
+                startActivity(Intent(this@MainActivity, ExpandableListActivity::class.java))
             }
         }
     }
