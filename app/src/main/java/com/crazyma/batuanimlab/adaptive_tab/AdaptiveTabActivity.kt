@@ -28,6 +28,7 @@ class AdaptiveTabActivity : AppCompatActivity() {
     private fun setupViewPager() {
         val adapter = PagerAdapter()
         binding.viewPager.adapter = adapter
+        binding.tabLayout.invisibleTabContent()
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = createText(position)
         }.attach()
@@ -36,9 +37,11 @@ class AdaptiveTabActivity : AppCompatActivity() {
     private fun createText(position: Int): String {
         val count = position + 1
         val builder = StringBuilder()
-        for (i in 0 until count) {
-            builder.append("TAb")
-        }
+//        if(count == 3 || count == 4 ) {
+//            for (i in 0 until count) {
+//                builder.append("TAb")
+//            }
+//        }
         builder.append(" $count")
         return builder.toString()
     }
