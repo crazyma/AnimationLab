@@ -64,7 +64,6 @@
         android:layout_height="wrap_content"
         android:onClick="buttonClicked"
         android:text="Reaction Icon Crop"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/innerTransButton" />
 
@@ -74,9 +73,18 @@
         android:layout_height="wrap_content"
         android:onClick="buttonClicked"
         android:text="Expandable"
+        app:layout_constraintStart_toEndOf="@id/cropRowButton"
+        app:layout_constraintTop_toBottomOf="@+id/innerTransButton" />
+
+    <Button
+        android:id="@+id/adaptiveTab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="buttonClicked"
+        android:text="Adaptive Tab"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cropRowButton" />
+        app:layout_constraintTop_toBottomOf="@id/cropRowButton" />
 
     <Button
         android:id="@+id/galaxyButton"
@@ -84,10 +92,9 @@
         android:layout_height="wrap_content"
         android:onClick="buttonClicked"
         android:text="Galaxy View"
-        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/expandableButton" />
+        app:layout_constraintTop_toBottomOf="@+id/adaptiveTab" />
 
     <Button
         android:id="@+id/shapeableButton"
