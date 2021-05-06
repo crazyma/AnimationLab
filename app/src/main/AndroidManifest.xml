@@ -48,6 +48,10 @@
         <activity android:name=".expandable_list.ExpandableListActivity">
 
         </activity>
+
+        <activity android:name=".adaptive_tab.AdaptiveTabActivity">
+
+        </activity>
     </application>
 
 </manifest>

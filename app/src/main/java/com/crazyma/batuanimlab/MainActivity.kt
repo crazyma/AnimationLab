@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.crazyma.batuanimlab.adaptive_tab.AdaptiveTabActivity
 import com.crazyma.batuanimlab.crop_row.CropRowActivity
 import com.crazyma.batuanimlab.expandable_list.ExpandableListActivity
 import com.crazyma.batuanimlab.galaxy.GalaxyActivity
@@ -48,6 +49,9 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.expandableButton -> {
                 startActivity(Intent(this@MainActivity, ExpandableListActivity::class.java))
+            }
+            R.id.adaptiveTab -> {
+                startActivity(Intent(this@MainActivity, AdaptiveTabActivity::class.java))
             }
         }
     }
