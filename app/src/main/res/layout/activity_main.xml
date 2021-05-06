@@ -80,10 +80,20 @@
         android:id="@+id/adaptiveTab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:onClick="buttonClicked"
         android:text="Adaptive Tab"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cropRowButton" />
+
+    <Button
+        android:id="@+id/barChart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:onClick="buttonClicked"
+        android:text="Bar Chart"
+        app:layout_constraintStart_toEndOf="@id/adaptiveTab"
         app:layout_constraintTop_toBottomOf="@id/cropRowButton" />
 
     <Button

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.crazyma.batuanimlab">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".MyApplication"
@@ -21,8 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
-            android:exported="true"/>
+        <activity
+            android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
+            android:exported="true" />
         <activity android:name=".CardFlipActivity">
 
         </activity>
@@ -33,9 +34,10 @@
 
         </activity>
         <activity android:name=".progress.BatuProgressViewActivity" />
-        <activity android:name=".inner_trans.InnerTransitionActivity"
-            android:theme="@style/AppTheme.NoStatus.NoNavigation"/>
-        <activity android:name=".crop_row.CropRowActivity" >
+        <activity
+            android:name=".inner_trans.InnerTransitionActivity"
+            android:theme="@style/AppTheme.NoStatus.NoNavigation" />
+        <activity android:name=".crop_row.CropRowActivity">
 
         </activity>
         <activity android:name=".galaxy.GalaxyActivity">
@@ -50,6 +52,10 @@
         </activity>
 
         <activity android:name=".adaptive_tab.AdaptiveTabActivity">
+
+        </activity>
+
+        <activity android:name=".barchart.BarChartActivity">
 
         </activity>
     </application>

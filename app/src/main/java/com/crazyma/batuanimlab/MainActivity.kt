@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.crazyma.batuanimlab.adaptive_tab.AdaptiveTabActivity
+import com.crazyma.batuanimlab.barchart.BarChartActivity
 import com.crazyma.batuanimlab.crop_row.CropRowActivity
 import com.crazyma.batuanimlab.expandable_list.ExpandableListActivity
 import com.crazyma.batuanimlab.galaxy.GalaxyActivity
@@ -52,6 +53,9 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.adaptiveTab -> {
                 startActivity(Intent(this@MainActivity, AdaptiveTabActivity::class.java))
+            }
+            R.id.barChart -> {
+                startActivity(Intent(this@MainActivity, BarChartActivity::class.java))
             }
         }
     }
