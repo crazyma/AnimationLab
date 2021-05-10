@@ -1,6 +1,7 @@
 package com.crazyma.batuanimlab.barchart
 
 import android.os.Bundle
+import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.crazyma.batuanimlab.databinding.ActivityBarChartBinding
 
@@ -16,7 +17,7 @@ class BarChartActivity : AppCompatActivity() {
         binding = ActivityBarChartBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.barChartLayout.setupDate()
+//        binding.barChartLayout.setupDate()
     }
 
 }

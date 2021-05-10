@@ -2,15 +2,21 @@
 <resources>
     <declare-styleable name="BatuProgressView">
         <attr name="indicator" format="reference" />
-        <attr name="indicatorWidth" format="dimension"/>
-        <attr name="indicatorPadding" format="dimension"/>
-        <attr name="progressLineWidth" format="dimension"/>
-        <attr name="baseColor" format="color"/>
-        <attr name="progressColor" format="color"/>
+        <attr name="indicatorWidth" format="dimension" />
+        <attr name="indicatorPadding" format="dimension" />
+        <attr name="progressLineWidth" format="dimension" />
+        <attr name="baseColor" format="color" />
+        <attr name="progressColor" format="color" />
     </declare-styleable>
     <declare-styleable name="ClipView">
-        <attr name="isClipped" format="boolean"/>
-        <attr name="isPatternShowed" format="boolean"/>
+        <attr name="isClipped" format="boolean" />
+        <attr name="isPatternShowed" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="BarChartView">
+        <attr name="barPaddingStart" format="dimension" />
+        <attr name="barPaddingEnd" format="dimension" />
+        <attr name="linePaddingTop" format="dimension" />
+        <attr name="yPositionPaddingStart" format="dimension"/>
     </declare-styleable>
 
 </resources>
