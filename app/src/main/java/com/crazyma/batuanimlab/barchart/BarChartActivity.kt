@@ -16,7 +16,7 @@ class BarChartActivity : AppCompatActivity() {
         binding = ActivityBarChartBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.barChartView.setupDate()
+        binding.barChartLayout.setupDate()
     }
 
 }

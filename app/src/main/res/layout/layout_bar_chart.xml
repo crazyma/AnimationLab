@@ -8,6 +8,18 @@
     android:padding="8dp"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
+
+    <com.crazyma.batuanimlab.barchart.BarChartView
+        android:id="@+id/barChartView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha="0.24"
+        android:background="#000000"
+        app:layout_constraintEnd_toEndOf="@id/barChartTopLine"
+        app:layout_constraintStart_toStartOf="@id/barChartTopLine"
+        app:layout_constraintBottom_toBottomOf="@id/barChartBottomLine"
+        app:layout_constraintTop_toTopOf="@id/barChartTopLine" />
+
     <View
         android:id="@id/barChartTopLine"
         android:layout_width="0dp"
