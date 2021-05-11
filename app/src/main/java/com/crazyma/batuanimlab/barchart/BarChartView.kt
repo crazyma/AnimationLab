@@ -2,12 +2,12 @@ package com.crazyma.batuanimlab.barchart
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
 import com.crazyma.batuanimlab.R
+import java.text.DecimalFormat
 
 /**
  * @author Batu
@@ -18,21 +18,13 @@ class BarChartView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    companion object {
-        private const val BAR_COUNT = 7
-    }
-
-    private val density
-        get() = context.resources.displayMetrics.density
-
-    private val barPaint = Paint().apply {
-        color = Color.RED
-    }
-
-    private val linePaint = Paint().apply {
-        color = Color.BLACK
-        strokeWidth = 1 * density
-    }
+    var barDataList: List<BarData>? = null
+        set(value) {
+            field = value
+            calculateYPosition()
+            calculateBarXPositionsInfo()
+            invalidate()
+        }
 
     private var xFactorHeight = 0
     private var yPositionWidth = 0
@@ -40,30 +32,32 @@ class BarChartView @JvmOverloads constructor(
     private var xFactorPaddingTop = 8 * density
     private var barWidth = 0f
 
+    private val density
+        get() = context.resources.displayMetrics.density
+
+    private val barPaint = Paint()
+
+    private val linePaint = Paint().apply {
+        strokeWidth = 1 * density
+    }
+
     private val textPaint = Paint().apply {
-        color = Color.BLACK // This is treated as an avatar, not text label.
         textAlign = Paint.Align.CENTER
-        textSize = 14 * context.resources.displayMetrics.density
         isAntiAlias = true
     }
 
-    private var testDateStrings = listOf(
-        "9/29", "9/30", "10/1", "10/2", "10/3", "10/4", "10/5"
-    )
-    private var dates: MutableList<Pair<String, Int>> = mutableListOf()
+    private var yPositionValues = mutableListOf<Long>()
     private var barPosition: List<Float> = mutableListOf()
     private var linePositionY: List<Float> = mutableListOf()
     private var barPaddingStart = 0f
         set(value) {
             field = value
-            calculateXPositionWidthList()
             invalidate()
         }
 
     private var barPaddingEnd = 0f
         set(value) {
             field = value
-            calculateXPositionWidthList()
             invalidate()
         }
 
@@ -87,13 +81,19 @@ class BarChartView @JvmOverloads constructor(
             linePaddingTop = a.getDimension(R.styleable.BarChartView_linePaddingTop, 0f)
             yPositionPaddingStart =
                 a.getDimension(R.styleable.BarChartView_yPositionPaddingStart, 0f)
+            barPaint.color = a.getColor(R.styleable.BarChartView_barColor, 0x3397CF)
+            linePaint.color = a.getColor(R.styleable.BarChartView_lineColor, 0x1F000000)
+            textPaint.color = a.getColor(R.styleable.BarChartView_barTextColor, 0x8A00000)
+            textPaint.textSize = a.getDimension(
+                R.styleable.BarChartView_barTextSize,
+                14 * context.resources.displayMetrics.scaledDensity
+            )
         } finally {
             a.recycle()
         }
 
         calculateYPositionWidth()
         calculateXPositionHeight()
-        calculateXPositionWidthList()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -105,10 +105,10 @@ class BarChartView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        drawBars(canvas)
-        drawXFactor(canvas)
+        drawXPositions(canvas)
         drawYPositions(canvas)
         drawLine(canvas)
+        drawBars(canvas)
     }
 
     private fun calculateYPositionWidth() {
@@ -125,34 +125,26 @@ class BarChartView @JvmOverloads constructor(
         xFactorHeight = bounds.height()
     }
 
-    private fun calculateXPositionWidthList() {
-        dates.clear()
-        val bounds = Rect()
-        testDateStrings.forEach {
-            textPaint.getTextBounds(it, 0, it.length, bounds)
-            dates.add(Pair(it, bounds.width()))
-        }
-    }
-
     private fun calculateBarXPositionsInfo() {
+        val barCount = barDataList?.size ?: return
+
         val minusWidth = density * 4
         barWidth = density * 24
-        var gapWidth = 0f
-        var totalBarsWidth = barWidth * BAR_COUNT
+        var totalBarsWidth = barWidth * barCount
         val barDisplayAreaWidth =
             width - barPaddingStart - barPaddingEnd - yPositionPaddingStart - yPositionWidth - paddingStart - paddingEnd
 
         while (totalBarsWidth > barDisplayAreaWidth) {
             when {
                 barWidth >= minusWidth * 2 -> barWidth -= minusWidth
-                else -> throw RuntimeException("Too small") //  TODO by Batu: fix it
+                else -> return
             }
-            totalBarsWidth = barWidth * BAR_COUNT
+            totalBarsWidth = barWidth * barCount
         }
-        gapWidth = (barDisplayAreaWidth - totalBarsWidth) / (BAR_COUNT - 1).toFloat()
+        val gapWidth = (barDisplayAreaWidth - totalBarsWidth) / (barCount - 1).toFloat()
 
         barPosition = mutableListOf<Float>().apply {
-            for (i in 0 until 7) {
+            for (i in 0 until barCount) {
                 add(paddingStart + barPaddingStart + barWidth * 0.5f + i * (barWidth + gapWidth))
             }
         }
@@ -165,35 +157,105 @@ class BarChartView @JvmOverloads constructor(
         linePositionY = listOf(topLinePositionY, middleLinePositionY, bottomLinePositionY)
     }
 
-    private fun drawBars(canvas: Canvas) {
-        val barHeight = density * 60
-        val barPositionBottom = height.toFloat() - xFactorHeight - xFactorPaddingTop
-        barPaint.strokeWidth = barWidth
-        barPosition.forEach { position ->
-            canvas.drawLine(
-                position,
-                barPositionBottom,
-                position,
-                barPositionBottom - barHeight,
-                barPaint
-            )
+    private fun calculateYPosition() {
+        val maxValue = barDataList?.map { it.value }?.max()?.let {
+            adjustMaxValue(it)
+        } ?: return
+
+        val middleValue = maxValue / 2
+
+        yPositionValues.apply {
+            clear()
+            add(maxValue)
+            add(middleValue)
+            add(0L)
         }
     }
 
-    private fun drawXFactor(canvas: Canvas) {
-        dates.forEachIndexed { index, (text, width) ->
+    private fun adjustMaxValue(value: Long): Long {
+        return when {
+            value < 10L -> {
+                value
+            }
+            value < 1_000L -> {
+                (value / 10 + 1) * 10
+            }
+            value < 1_000_000L -> {
+                (value / 1000 + 1) * 1000
+            }
+            else -> {
+                (value / 1000000 + 1) * 1000000
+            }
+        }
+    }
+
+    private fun getDisplayValueString(value: Long): String {
+        return when {
+            value < 10L -> {
+                value.toString()
+            }
+            value < 1_000L -> {
+                (value / 10 * 10).toString()
+            }
+            value < 1_000_000L -> {
+                DecimalFormat("#.#").format(value / 1000f) + "K"
+            }
+            else -> {
+                DecimalFormat("#.#").format(value / 1000000f) + "M"
+            }
+        }
+    }
+
+    private fun drawBars(canvas: Canvas) {
+        if (barDataList.isNullOrEmpty() || yPositionValues.isEmpty() || barPosition.isEmpty()) return
+        if (barDataList?.size != barPosition.size)
+            throw java.lang.RuntimeException("The data count of `barDataList` & `barPosition` are NOT the same")
+
+        val barPositionTop = linePositionY.first()
+        val barPositionBottom = linePositionY.last()
+        val totalBarHeight = barPositionBottom - barPositionTop
+        val barHeightList = barDataList!!.map { it.value }.map { value ->
+            totalBarHeight * value / yPositionValues[0].toFloat()
+        }
+
+        barPaint.strokeWidth = barWidth
+
+        barPosition.forEachIndexed { index, x ->
+            canvas.drawLine(
+                x,
+                barPositionBottom,
+                x,
+                barPositionBottom - barHeightList[index],
+                barPaint
+            )
+        }
+
+        barPaint.strokeWidth = 1 * density
+        canvas.drawLine(
+            barPosition.first() - barWidth * 0.5f,
+            barPositionBottom,
+            barPosition.last() + barWidth * 0.5f,
+            barPositionBottom,
+            barPaint
+        )
+    }
+
+    private fun drawXPositions(canvas: Canvas) {
+        barDataList?.map { it.text }?.forEachIndexed { index, text ->
             canvas.drawText(text, barPosition[index], height.toFloat(), textPaint)
         }
     }
 
     private fun drawYPositions(canvas: Canvas) {
+        if (barDataList.isNullOrEmpty()) return
 
-        val texts = listOf<String>("1000", "111", "0k")
         val bounds = Rect()
         var textWidth = 0
         var textHeight = 0
 
-        texts.forEachIndexed { index, s ->
+        yPositionValues.map {
+            getDisplayValueString(it)
+        }.forEachIndexed { index, s ->
             textPaint.getTextBounds(s, 0, s.length, bounds)
             textWidth = bounds.width()
             textHeight = bounds.height()
@@ -219,5 +281,4 @@ class BarChartView @JvmOverloads constructor(
             )
         }
     }
-
 }

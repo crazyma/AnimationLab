@@ -21,6 +21,10 @@
         app:barPaddingEnd="8dp"
         android:paddingStart="0dp"
         android:paddingEnd="8dp"
+        app:barColor="#FF3397CF"
+        app:lineColor="#1F000000"
+        app:barTextColor="#8A000000"
+        app:barTextSize="14sp"
         app:yPositionPaddingStart="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
