@@ -4,14 +4,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<!--    <com.crazyma.batuanimlab.barchart.BarCharLayout-->
-<!--        android:id="@+id/barChartLayout"-->
-<!--        android:layout_width="400dp"-->
-<!--        android:layout_height="200dp"-->
-<!--        android:padding="8dp"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"/>-->
-
     <com.crazyma.batuanimlab.barchart.BarChartView
         android:id="@+id/barChartView"
         android:layout_width="360dp"
