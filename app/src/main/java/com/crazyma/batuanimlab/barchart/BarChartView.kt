@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import com.crazyma.batuanimlab.R
 import java.text.DecimalFormat
@@ -158,17 +159,19 @@ class BarChartView @JvmOverloads constructor(
     }
 
     private fun calculateYPosition() {
-        val maxValue = barDataList?.map { it.value }?.max()?.let {
-            adjustMaxValue(it)
-        } ?: return
+        val rawValues = barDataList?.map { it.value.toDouble() } ?: return
 
-        val middleValue = maxValue / 2
+        val chartLinearScale = ChartLinearScale()
+
+        val values = chartLinearScale.getDashboardTicks(rawValues).reversed().map { it.toLong() }
 
         yPositionValues.apply {
             clear()
-            add(maxValue)
-            add(middleValue)
-            add(0L)
+            addAll(values)
+        }.also {
+            it.forEach {
+                Log.i("badu", "y value: $it")
+            }
         }
     }
 
