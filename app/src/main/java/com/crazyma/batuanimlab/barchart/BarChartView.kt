@@ -21,15 +21,15 @@ class BarChartView @JvmOverloads constructor(
     var barDataList: List<BarData>? = null
         set(value) {
             field = value
-            calculateYPosition()
+            calculateYTextValues()
             calculateBarXPositionsInfo()
             invalidate()
         }
 
-    private var xFactorHeight = 0
-    private var yPositionWidth = 0
-    private var yPositionPaddingStart = 0f
-    private var xFactorPaddingTop = 8 * density
+    private var xTextHeight = 0
+    private var yTextWidth = 0
+    private var yTextPaddingStart = 0f
+    private var xTextPaddingTop = 8 * density
     private var barWidth = 0f
 
     private val density
@@ -46,8 +46,8 @@ class BarChartView @JvmOverloads constructor(
         isAntiAlias = true
     }
 
-    private var yPositionValues = mutableListOf<Long>()
-    private var barPosition: List<Float> = mutableListOf()
+    private var yTextValues = mutableListOf<Long>()
+    private var barPositionX: List<Float> = mutableListOf()
     private var linePositionY: List<Float> = mutableListOf()
     private var barPaddingStart = 0f
         set(value) {
@@ -79,8 +79,8 @@ class BarChartView @JvmOverloads constructor(
             barPaddingStart = a.getDimension(R.styleable.BarChartView_barPaddingStart, 0f)
             barPaddingEnd = a.getDimension(R.styleable.BarChartView_barPaddingEnd, 0f)
             linePaddingTop = a.getDimension(R.styleable.BarChartView_linePaddingTop, 0f)
-            yPositionPaddingStart =
-                a.getDimension(R.styleable.BarChartView_yPositionPaddingStart, 0f)
+            yTextPaddingStart =
+                a.getDimension(R.styleable.BarChartView_yTextPaddingStart, 0f)
             barPaint.color = a.getColor(R.styleable.BarChartView_barColor, 0x3397CF)
             linePaint.color = a.getColor(R.styleable.BarChartView_lineColor, 0x1F000000)
             textPaint.color = a.getColor(R.styleable.BarChartView_barTextColor, 0x8A00000)
@@ -92,8 +92,8 @@ class BarChartView @JvmOverloads constructor(
             a.recycle()
         }
 
-        calculateYPositionWidth()
-        calculateXPositionHeight()
+        calculateYTextWidth()
+        calculateXTextHeight()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -105,24 +105,24 @@ class BarChartView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        drawXPositions(canvas)
-        drawYPositions(canvas)
+        drawXTexts(canvas)
+        drawYTexts(canvas)
         drawLine(canvas)
         drawBars(canvas)
     }
 
-    private fun calculateYPositionWidth() {
+    private fun calculateYTextWidth() {
         val bounds = Rect()
         val string = "00000"
         textPaint.getTextBounds(string, 0, string.length, bounds)
-        yPositionWidth = bounds.width()
+        yTextWidth = bounds.width()
     }
 
-    private fun calculateXPositionHeight() {
+    private fun calculateXTextHeight() {
         val bounds = Rect()
         val string = "12/31"
         textPaint.getTextBounds(string, 0, string.length, bounds)
-        xFactorHeight = bounds.height()
+        xTextHeight = bounds.height()
     }
 
     private fun calculateBarXPositionsInfo() {
@@ -132,7 +132,7 @@ class BarChartView @JvmOverloads constructor(
         barWidth = density * 24
         var totalBarsWidth = barWidth * barCount
         val barDisplayAreaWidth =
-            width - barPaddingStart - barPaddingEnd - yPositionPaddingStart - yPositionWidth - paddingStart - paddingEnd
+            width - barPaddingStart - barPaddingEnd - yTextPaddingStart - yTextWidth - paddingStart - paddingEnd
 
         while (totalBarsWidth > barDisplayAreaWidth) {
             when {
@@ -143,7 +143,7 @@ class BarChartView @JvmOverloads constructor(
         }
         val gapWidth = (barDisplayAreaWidth - totalBarsWidth) / (barCount - 1).toFloat()
 
-        barPosition = mutableListOf<Float>().apply {
+        barPositionX = mutableListOf<Float>().apply {
             for (i in 0 until barCount) {
                 add(paddingStart + barPaddingStart + barWidth * 0.5f + i * (barWidth + gapWidth))
             }
@@ -151,39 +151,22 @@ class BarChartView @JvmOverloads constructor(
     }
 
     private fun calculateLineYPositionInfo() {
-        val bottomLinePositionY = height.toFloat() - xFactorHeight - xFactorPaddingTop
+        val bottomLinePositionY = height.toFloat() - xTextHeight - xTextPaddingTop
         val topLinePositionY = linePaddingTop
         val middleLinePositionY = (bottomLinePositionY + topLinePositionY) * 0.5f
         linePositionY = listOf(topLinePositionY, middleLinePositionY, bottomLinePositionY)
     }
 
-    private fun calculateYPosition() {
+    private fun calculateYTextValues() {
         val rawValues = barDataList?.map { it.value.toDouble() } ?: return
 
         val chartLinearScale = ChartLinearScale()
 
         val values = chartLinearScale.getDashboardTicks(rawValues).reversed().map { it.toLong() }
 
-        yPositionValues.apply {
+        yTextValues.apply {
             clear()
             addAll(values)
-        }
-    }
-
-    private fun adjustMaxValue(value: Long): Long {
-        return when {
-            value < 10L -> {
-                value
-            }
-            value < 1_000L -> {
-                (value / 10 + 1) * 10
-            }
-            value < 1_000_000L -> {
-                (value / 1000 + 1) * 1000
-            }
-            else -> {
-                (value / 1000000 + 1) * 1000000
-            }
         }
     }
 
@@ -205,8 +188,8 @@ class BarChartView @JvmOverloads constructor(
     }
 
     private fun drawBars(canvas: Canvas) {
-        if (barDataList.isNullOrEmpty() || yPositionValues.isEmpty() || barPosition.isEmpty()) return
-        if (barDataList?.size != barPosition.size)
+        if (barDataList.isNullOrEmpty() || yTextValues.isEmpty() || barPositionX.isEmpty()) return
+        if (barDataList?.size != barPositionX.size)
             throw java.lang.RuntimeException("The data count of `barDataList` & `barPosition` are NOT the same")
 
         val barPositionTop = linePositionY.first()
@@ -214,7 +197,7 @@ class BarChartView @JvmOverloads constructor(
         val totalBarHeight = barPositionBottom - barPositionTop
         val barHeightList = barDataList!!.map { it.value }.map { value ->
             if (value > 0) {
-                totalBarHeight * value / yPositionValues[0].toFloat()
+                totalBarHeight * value / yTextValues[0].toFloat()
             } else {
                 1 * density
             }
@@ -222,7 +205,7 @@ class BarChartView @JvmOverloads constructor(
 
         barPaint.strokeWidth = barWidth
 
-        barPosition.forEachIndexed { index, x ->
+        barPositionX.forEachIndexed { index, x ->
             canvas.drawLine(
                 x,
                 barPositionBottom,
@@ -235,12 +218,12 @@ class BarChartView @JvmOverloads constructor(
         barPaint.strokeWidth = 1 * density
     }
 
-    private fun drawXPositions(canvas: Canvas) {
+    private fun drawXTexts(canvas: Canvas) {
         val isCollide = checkXPositionsTextIsCollide()
         val size = barDataList?.size ?: 0
         barDataList?.map { it.text }?.forEachIndexed { index, text ->
             if (!isCollide || index == 0 || index == size - 1 || index == size / 2)
-                canvas.drawText(text, barPosition[index], height.toFloat(), textPaint)
+                canvas.drawText(text, barPositionX[index], height.toFloat(), textPaint)
         }
     }
 
@@ -261,8 +244,8 @@ class BarChartView @JvmOverloads constructor(
         for (index in 1 until size) {
             previousTextWidth = barDataList!![index - 1].text.getWidthInCanvas(bounds)
             pivotTextWidth = barDataList!![index].text.getWidthInCanvas(bounds)
-            previousX = barPosition[index - 1]
-            pivotX = barPosition[index]
+            previousX = barPositionX[index - 1]
+            pivotX = barPositionX[index]
 
             if (previousX + 0.5f * previousTextWidth >= pivotX - 0.5f * pivotTextWidth)
                 return true
@@ -270,14 +253,14 @@ class BarChartView @JvmOverloads constructor(
         return false
     }
 
-    private fun drawYPositions(canvas: Canvas) {
+    private fun drawYTexts(canvas: Canvas) {
         if (barDataList.isNullOrEmpty()) return
 
         val bounds = Rect()
         var textWidth = 0
         var textHeight = 0
 
-        yPositionValues.map {
+        yTextValues.map {
             getDisplayValueString(it)
         }.forEachIndexed { index, s ->
             textPaint.getTextBounds(s, 0, s.length, bounds)
@@ -294,7 +277,7 @@ class BarChartView @JvmOverloads constructor(
 
     private fun drawLine(canvas: Canvas) {
         val lineStartPositionX = paddingStart.toFloat()
-        val lineEndPositionX = width - (paddingEnd + yPositionWidth + yPositionPaddingStart)
+        val lineEndPositionX = width - (paddingEnd + yTextWidth + yTextPaddingStart)
         linePositionY.forEach { positionY ->
             canvas.drawLine(
                 lineStartPositionX,

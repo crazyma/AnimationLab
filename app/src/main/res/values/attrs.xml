@@ -16,7 +16,7 @@
         <attr name="barPaddingStart" format="dimension" />
         <attr name="barPaddingEnd" format="dimension" />
         <attr name="linePaddingTop" format="dimension" />
-        <attr name="yPositionPaddingStart" format="dimension" />
+        <attr name="yTextPaddingStart" format="dimension" />
         <attr name="barColor" format="color" />
         <attr name="lineColor" format="color" />
         <attr name="barTextColor" format="color" />
