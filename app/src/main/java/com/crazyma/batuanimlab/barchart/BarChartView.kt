@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import com.crazyma.batuanimlab.R
 import java.text.DecimalFormat
@@ -168,10 +167,6 @@ class BarChartView @JvmOverloads constructor(
         yPositionValues.apply {
             clear()
             addAll(values)
-        }.also {
-            it.forEach {
-                Log.i("badu", "y value: $it")
-            }
         }
     }
 
@@ -218,7 +213,11 @@ class BarChartView @JvmOverloads constructor(
         val barPositionBottom = linePositionY.last()
         val totalBarHeight = barPositionBottom - barPositionTop
         val barHeightList = barDataList!!.map { it.value }.map { value ->
-            totalBarHeight * value / yPositionValues[0].toFloat()
+            if (value > 0) {
+                totalBarHeight * value / yPositionValues[0].toFloat()
+            } else {
+                1 * density
+            }
         }
 
         barPaint.strokeWidth = barWidth
@@ -234,19 +233,41 @@ class BarChartView @JvmOverloads constructor(
         }
 
         barPaint.strokeWidth = 1 * density
-        canvas.drawLine(
-            barPosition.first() - barWidth * 0.5f,
-            barPositionBottom,
-            barPosition.last() + barWidth * 0.5f,
-            barPositionBottom,
-            barPaint
-        )
     }
 
     private fun drawXPositions(canvas: Canvas) {
+        val isCollide = checkXPositionsTextIsCollide()
+        val size = barDataList?.size ?: 0
         barDataList?.map { it.text }?.forEachIndexed { index, text ->
-            canvas.drawText(text, barPosition[index], height.toFloat(), textPaint)
+            if (!isCollide || index == 0 || index == size - 1 || index == size / 2)
+                canvas.drawText(text, barPosition[index], height.toFloat(), textPaint)
         }
+    }
+
+    private fun checkXPositionsTextIsCollide(): Boolean {
+        val size = barDataList?.size ?: return false
+        if (size <= 1) return false
+
+        fun String.getWidthInCanvas(bounds: Rect): Float {
+            textPaint.getTextBounds(this, 0, this.length, bounds)
+            return bounds.width().toFloat()
+        }
+
+        val bounds = Rect()
+        var previousTextWidth: Float
+        var pivotTextWidth: Float
+        var previousX: Float
+        var pivotX: Float
+        for (index in 1 until size) {
+            previousTextWidth = barDataList!![index - 1].text.getWidthInCanvas(bounds)
+            pivotTextWidth = barDataList!![index].text.getWidthInCanvas(bounds)
+            previousX = barPosition[index - 1]
+            pivotX = barPosition[index]
+
+            if (previousX + 0.5f * previousTextWidth >= pivotX - 0.5f * pivotTextWidth)
+                return true
+        }
+        return false
     }
 
     private fun drawYPositions(canvas: Canvas) {
