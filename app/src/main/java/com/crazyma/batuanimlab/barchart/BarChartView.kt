@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.crazyma.batuanimlab.R
 import java.text.DecimalFormat
+import kotlin.math.max
 
 /**
  * @author Batu
@@ -195,9 +196,10 @@ class BarChartView @JvmOverloads constructor(
         val barPositionTop = linePositionY.first()
         val barPositionBottom = linePositionY.last()
         val totalBarHeight = barPositionBottom - barPositionTop
+        val minBarHeight = 1 * density
         val barHeightList = barDataList!!.map { it.value }.map { value ->
             if (value > 0) {
-                totalBarHeight * value / yTextValues[0].toFloat()
+                max(totalBarHeight * value / yTextValues[0].toFloat(), minBarHeight)
             } else {
                 1 * density
             }
