@@ -1,14 +1,17 @@
 package com.crazyma.batuanimlab.barchart
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import com.crazyma.batuanimlab.R
 import java.text.DecimalFormat
+import kotlin.math.absoluteValue
 import kotlin.math.max
+
 
 /**
  * @author Batu
@@ -32,11 +35,25 @@ class BarChartView @JvmOverloads constructor(
     private var yTextPaddingStart = 0f
     private var xTextPaddingTop = 8 * density
     private var barWidth = 0f
+    private var closestBarXIndex: Int? = null
+
+    private val barDisplayAreaWidth: Float
+        get() = width - barPaddingStart - barPaddingEnd - yTextPaddingStart - yTextWidth - paddingStart - paddingEnd
 
     private val density
         get() = context.resources.displayMetrics.density
 
     private val barPaint = Paint()
+
+    private val pivotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 2 * density
+        pathEffect = DashPathEffect(floatArrayOf(15f, 5f), 0f)
+    }
+
+    private val thumbPaint = Paint().apply {
+        color = Color.BLUE
+    }
 
     private val linePaint = Paint().apply {
         strokeWidth = 1 * density
@@ -83,6 +100,7 @@ class BarChartView @JvmOverloads constructor(
             yTextPaddingStart =
                 a.getDimension(R.styleable.BarChartView_yTextPaddingStart, 0f)
             barPaint.color = a.getColor(R.styleable.BarChartView_barColor, 0x3397CF)
+            pivotPaint.color = a.getColor(R.styleable.BarChartView_barColor, 0x3397CF)
             linePaint.color = a.getColor(R.styleable.BarChartView_lineColor, 0x1F000000)
             textPaint.color = a.getColor(R.styleable.BarChartView_barTextColor, 0x8A00000)
             textPaint.textSize = a.getDimension(
@@ -110,6 +128,60 @@ class BarChartView @JvmOverloads constructor(
         drawYTexts(canvas)
         drawLine(canvas)
         drawBars(canvas)
+        drawPivotLine(canvas)
+        drawThumb(canvas)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        return when (event?.action) {
+
+            MotionEvent.ACTION_MOVE -> {
+                handleTouch(event)
+                true
+            }
+
+            MotionEvent.ACTION_DOWN -> {
+                handleTouch(event)
+                true
+            }
+
+            MotionEvent.ACTION_UP -> {
+                updatePivotLineInfo(null)
+                true
+            }
+
+            MotionEvent.ACTION_CANCEL -> {
+                updatePivotLineInfo(null)
+                invalidate()
+                true
+            }
+
+            else -> {
+                super.onTouchEvent(event)
+            }
+        }
+    }
+
+    private fun handleTouch(event: MotionEvent) {
+        val x = event.x
+        val y = event.y
+
+        var distance = Float.MAX_VALUE
+        barPositionX.forEachIndexed { index, barX ->
+            (barX - x).absoluteValue.let {
+                if (it < distance) {
+                    distance = it
+                    updatePivotLineInfo(index)
+                }
+            }
+        }
+    }
+
+    private fun updatePivotLineInfo(index: Int?) {
+        closestBarXIndex = index
+        invalidate()
+        Log.d("badu", "closestBarXIndex: $closestBarXIndex")
     }
 
     private fun calculateYTextWidth() {
@@ -132,8 +204,6 @@ class BarChartView @JvmOverloads constructor(
         val minusWidth = density * 4
         barWidth = density * 24
         var totalBarsWidth = barWidth * barCount
-        val barDisplayAreaWidth =
-            width - barPaddingStart - barPaddingEnd - yTextPaddingStart - yTextWidth - paddingStart - paddingEnd
 
         while (totalBarsWidth > barDisplayAreaWidth) {
             when {
@@ -216,8 +286,43 @@ class BarChartView @JvmOverloads constructor(
                 barPaint
             )
         }
+    }
 
-        barPaint.strokeWidth = 1 * density
+    private fun drawPivotLine(canvas: Canvas) {
+        val closestBarXIndex = closestBarXIndex ?: return
+
+        val barPositionTop = linePositionY.first()
+        val barPositionBottom = linePositionY.last()
+        val path = Path().apply {
+            reset()
+            moveTo(barPositionX[closestBarXIndex], barPositionTop)
+            lineTo(barPositionX[closestBarXIndex], barPositionBottom)
+        }
+        canvas.drawPath(path, pivotPaint)
+    }
+
+    private fun drawThumb(canvas: Canvas) {
+        val closestBarXIndex = closestBarXIndex ?: return
+
+        val barPositionTop = linePositionY.first()
+        val positionX = barPositionX[closestBarXIndex]
+        val width = 80 * density
+
+        val thumbStartX = if (positionX - width / 2 < paddingStart) {
+            paddingStart.toFloat()
+        } else {
+            positionX - width / 2
+        }
+
+        canvas.drawRect(
+            thumbStartX,
+            barPositionTop,
+            thumbStartX + width,
+            barPositionTop + 40 * density,
+            thumbPaint
+        )
+
+        paddingStart
     }
 
     private fun drawXTexts(canvas: Canvas) {
