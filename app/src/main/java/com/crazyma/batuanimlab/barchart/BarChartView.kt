@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.widget.FrameLayout
@@ -115,6 +114,7 @@ class BarChartView @JvmOverloads constructor(
         }
 
         setWillNotDraw(false)
+        clipToPadding = false
         calculateYTextWidth()
         calculateXTextHeight()
         setupThumbView()
@@ -175,8 +175,8 @@ class BarChartView @JvmOverloads constructor(
 
     private fun setupThumbView() {
         thumbBinding = LayoutThumbViewBinding.inflate(LayoutInflater.from(context), this, false)
-        this.addView(thumbBinding?.root)
-        thumbBinding?.root?.isInvisible = true
+        this.addView(thumbBinding.root)
+        thumbBinding.root.isInvisible = true
     }
 
     private fun handleTouch(event: MotionEvent) {
@@ -326,14 +326,13 @@ class BarChartView @JvmOverloads constructor(
 
     private fun moveThumb() {
         val closestBarXIndex = closestBarXIndex ?: return
-        Log.v("badu", "closestBarXIndex: $closestBarXIndex")
         val positionX = barPositionX[closestBarXIndex]
-        Log.d("badu", "positionX: $positionX")
         val thumbWidth = thumbBinding.root.width
 
-        val boundStart = paddingStart.toFloat()
-        val bondEnd = width - paddingEnd - yTextWidth - yTextPaddingStart - thumbWidth
-        val thumbX = positionX
+        val boundStart = 0f
+        val bondEnd =
+            width - paddingEnd - yTextWidth - yTextPaddingStart - thumbWidth - paddingStart
+        val thumbX = positionX - thumbWidth * .5f - paddingStart
 
         val thumbStartX = when {
             thumbX < boundStart -> boundStart
@@ -341,7 +340,6 @@ class BarChartView @JvmOverloads constructor(
             else -> thumbX
         }
 
-        Log.i("badu", "thumbStartX: $thumbStartX")
         thumbBinding.thumbView.apply {
             isVisible = true
             updateLayoutParams<MarginLayoutParams> {
