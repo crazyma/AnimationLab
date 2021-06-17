@@ -9,7 +9,7 @@
         android:layout_width="360dp"
         android:layout_margin="24dp"
         android:layout_height="200dp"
-        android:paddingStart="0dp"
+        android:paddingStart="8dp"
         android:paddingEnd="8dp"
         app:barColor="#FF3397CF"
         app:barPaddingEnd="8dp"

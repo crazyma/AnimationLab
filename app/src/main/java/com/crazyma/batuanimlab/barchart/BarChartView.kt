@@ -306,23 +306,26 @@ class BarChartView @JvmOverloads constructor(
 
         val barPositionTop = linePositionY.first()
         val positionX = barPositionX[closestBarXIndex]
-        val width = 80 * density
+        val thumbWidth = 80 * density
 
-        val thumbStartX = if (positionX - width / 2 < paddingStart) {
-            paddingStart.toFloat()
-        } else {
-            positionX - width / 2
+
+        val boundStart = paddingStart.toFloat()
+        val bondEnd = width - paddingEnd - yTextWidth - yTextPaddingStart - thumbWidth
+        val thumbX = positionX - thumbWidth / 2
+
+        val thumbStartX = when {
+            thumbX < boundStart -> boundStart
+            thumbX > bondEnd -> bondEnd
+            else -> thumbX
         }
 
         canvas.drawRect(
             thumbStartX,
             barPositionTop,
-            thumbStartX + width,
+            thumbStartX + thumbWidth,
             barPositionTop + 40 * density,
             thumbPaint
         )
-
-        paddingStart
     }
 
     private fun drawXTexts(canvas: Canvas) {

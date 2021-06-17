@@ -19,7 +19,7 @@ class BarChartActivity : AppCompatActivity() {
 
 //        binding.barChartLayout.setupDate()
         Handler().postDelayed({
-            val list = getData(5)
+            val list = getData(6)
             binding.barChartView.barDataList = list
         }, 1000)
     }
@@ -74,6 +74,39 @@ class BarChartActivity : AppCompatActivity() {
                 BarData("10/3", 1),
                 BarData("10/4", 3),
                 BarData("10/5", 1)
+            )
+
+            6 -> listOf(
+                BarData("9/29", 0),
+                BarData("9/30", 0),
+                BarData("10/1", 0),
+                BarData("10/3", 1),
+                BarData("10/4", 3),
+                BarData("9/29", 3),
+                BarData("9/30", 9),
+                BarData("10/1", 2),
+                BarData("10/2", 6),
+                BarData("10/3", 10),
+                BarData("10/4", 5),
+                BarData("9/29", 3),
+                BarData("9/30", 9),
+                BarData("10/1", 2),
+                BarData("10/2", 6),
+                BarData("10/3", 11),
+                BarData("10/4", 5),
+                BarData("10/3", 1),
+                BarData("10/4", 3),
+                BarData("9/29", 0),
+                BarData("9/30", 0),
+                BarData("10/1", 0),
+                BarData("10/2", 0),
+                BarData("10/3", 1),
+                BarData("10/4", 3),
+                BarData("9/29", 0),
+                BarData("9/30", 0),
+                BarData("10/1", 0),
+                BarData("10/3", 1),
+                BarData("10/4", 3)
             )
             else -> listOf()
         }
