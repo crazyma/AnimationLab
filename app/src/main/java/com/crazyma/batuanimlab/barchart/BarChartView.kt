@@ -7,6 +7,8 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.FrameLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.crazyma.batuanimlab.R
 import java.text.DecimalFormat
 import kotlin.math.absoluteValue
@@ -20,7 +22,7 @@ class BarChartView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     var barDataList: List<BarData>? = null
         set(value) {
@@ -111,6 +113,7 @@ class BarChartView @JvmOverloads constructor(
             a.recycle()
         }
 
+        setWillNotDraw(false)
         calculateYTextWidth()
         calculateXTextHeight()
     }
