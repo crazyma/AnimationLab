@@ -5,11 +5,14 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MotionEvent
-import android.view.View
 import android.widget.FrameLayout
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import com.crazyma.batuanimlab.R
+import com.crazyma.batuanimlab.databinding.LayoutThumbViewBinding
 import java.text.DecimalFormat
 import kotlin.math.absoluteValue
 import kotlin.math.max
@@ -53,10 +56,6 @@ class BarChartView @JvmOverloads constructor(
         pathEffect = DashPathEffect(floatArrayOf(15f, 5f), 0f)
     }
 
-    private val thumbPaint = Paint().apply {
-        color = Color.BLUE
-    }
-
     private val linePaint = Paint().apply {
         strokeWidth = 1 * density
     }
@@ -88,6 +87,8 @@ class BarChartView @JvmOverloads constructor(
             invalidate()
         }
 
+    private lateinit var thumbBinding: LayoutThumbViewBinding
+
     init {
         val a = context.theme.obtainStyledAttributes(
             attrs,
@@ -116,6 +117,7 @@ class BarChartView @JvmOverloads constructor(
         setWillNotDraw(false)
         calculateYTextWidth()
         calculateXTextHeight()
+        setupThumbView()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -132,7 +134,6 @@ class BarChartView @JvmOverloads constructor(
         drawLine(canvas)
         drawBars(canvas)
         drawPivotLine(canvas)
-        drawThumb(canvas)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -141,22 +142,28 @@ class BarChartView @JvmOverloads constructor(
 
             MotionEvent.ACTION_MOVE -> {
                 handleTouch(event)
+                populateThumbInfo()
+                moveThumb()
                 true
             }
 
             MotionEvent.ACTION_DOWN -> {
                 handleTouch(event)
+                populateThumbInfo()
+                moveThumb()
                 true
             }
 
             MotionEvent.ACTION_UP -> {
                 updatePivotLineInfo(null)
+                hideThumb()
                 true
             }
 
             MotionEvent.ACTION_CANCEL -> {
                 updatePivotLineInfo(null)
                 invalidate()
+                hideThumb()
                 true
             }
 
@@ -164,6 +171,12 @@ class BarChartView @JvmOverloads constructor(
                 super.onTouchEvent(event)
             }
         }
+    }
+
+    private fun setupThumbView() {
+        thumbBinding = LayoutThumbViewBinding.inflate(LayoutInflater.from(context), this, false)
+        this.addView(thumbBinding?.root)
+        thumbBinding?.root?.isInvisible = true
     }
 
     private fun handleTouch(event: MotionEvent) {
@@ -184,7 +197,6 @@ class BarChartView @JvmOverloads constructor(
     private fun updatePivotLineInfo(index: Int?) {
         closestBarXIndex = index
         invalidate()
-        Log.d("badu", "closestBarXIndex: $closestBarXIndex")
     }
 
     private fun calculateYTextWidth() {
@@ -294,27 +306,34 @@ class BarChartView @JvmOverloads constructor(
     private fun drawPivotLine(canvas: Canvas) {
         val closestBarXIndex = closestBarXIndex ?: return
 
-        val barPositionTop = linePositionY.first()
         val barPositionBottom = linePositionY.last()
         val path = Path().apply {
             reset()
-            moveTo(barPositionX[closestBarXIndex], barPositionTop)
+            moveTo(barPositionX[closestBarXIndex], paddingTop.toFloat())
             lineTo(barPositionX[closestBarXIndex], barPositionBottom)
         }
         canvas.drawPath(path, pivotPaint)
     }
 
-    private fun drawThumb(canvas: Canvas) {
+    private fun populateThumbInfo() {
         val closestBarXIndex = closestBarXIndex ?: return
 
-        val barPositionTop = linePositionY.first()
-        val positionX = barPositionX[closestBarXIndex]
-        val thumbWidth = 80 * density
+        barDataList?.get(closestBarXIndex)?.let { barData ->
+            thumbBinding.dateTextView.text = barData.text
+            thumbBinding.infoNumberTextView.text = barData.value.toString()
+        }
+    }
 
+    private fun moveThumb() {
+        val closestBarXIndex = closestBarXIndex ?: return
+        Log.v("badu", "closestBarXIndex: $closestBarXIndex")
+        val positionX = barPositionX[closestBarXIndex]
+        Log.d("badu", "positionX: $positionX")
+        val thumbWidth = thumbBinding.root.width
 
         val boundStart = paddingStart.toFloat()
         val bondEnd = width - paddingEnd - yTextWidth - yTextPaddingStart - thumbWidth
-        val thumbX = positionX - thumbWidth / 2
+        val thumbX = positionX
 
         val thumbStartX = when {
             thumbX < boundStart -> boundStart
@@ -322,13 +341,17 @@ class BarChartView @JvmOverloads constructor(
             else -> thumbX
         }
 
-        canvas.drawRect(
-            thumbStartX,
-            barPositionTop,
-            thumbStartX + thumbWidth,
-            barPositionTop + 40 * density,
-            thumbPaint
-        )
+        Log.i("badu", "thumbStartX: $thumbStartX")
+        thumbBinding.thumbView.apply {
+            isVisible = true
+            updateLayoutParams<MarginLayoutParams> {
+                leftMargin = thumbStartX.toInt()
+            }
+        }
+    }
+
+    private fun hideThumb() {
+        thumbBinding.thumbView.isInvisible = true
     }
 
     private fun drawXTexts(canvas: Canvas) {

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@id/thumbView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@android:color/background_light"
+    android:elevation="4dp"
+    android:paddingStart="12dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="12dp"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:id="@+id/dateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12/31"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/infoTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="觸及數"
+        app:layout_constraintStart_toStartOf="@id/dateTextView"
+        app:layout_constraintTop_toBottomOf="@id/dateTextView" />
+
+    <TextView
+        android:id="@+id/infoNumberTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="12345"
+        app:layout_constraintBaseline_toBaselineOf="@id/infoTitleTextView"
+        app:layout_constraintStart_toEndOf="@id/infoTitleTextView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
