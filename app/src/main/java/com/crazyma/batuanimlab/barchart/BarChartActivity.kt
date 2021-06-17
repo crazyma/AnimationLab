@@ -77,28 +77,28 @@ class BarChartActivity : AppCompatActivity() {
             )
 
             6 -> listOf(
-                BarData("9/29", 0),
+                BarData("9/29", 0),// 0
                 BarData("9/30", 0),
                 BarData("10/1", 0),
                 BarData("10/3", 1),
                 BarData("10/4", 3),
                 BarData("9/29", 3),
                 BarData("9/30", 9),
-                BarData("10/1", 2),
+                BarData("10/1", 2),// 7
                 BarData("10/2", 6),
                 BarData("10/3", 10),
                 BarData("10/4", 5),
                 BarData("9/29", 3),
                 BarData("9/30", 9),
                 BarData("10/1", 2),
-                BarData("10/2", 6),
+                BarData("10/2", 6),//14
                 BarData("10/3", 11),
                 BarData("10/4", 5),
                 BarData("10/3", 1),
                 BarData("10/4", 3),
                 BarData("9/29", 0),
                 BarData("9/30", 0),
-                BarData("10/1", 0),
+                BarData("10/1", 0),//21
                 BarData("10/2", 0),
                 BarData("10/3", 1),
                 BarData("10/4", 3),
@@ -106,7 +106,7 @@ class BarChartActivity : AppCompatActivity() {
                 BarData("9/30", 0),
                 BarData("10/1", 0),
                 BarData("10/3", 1),
-                BarData("10/4", 3)
+                BarData("10/4", 3)// 29
             )
             else -> listOf()
         }

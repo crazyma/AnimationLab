@@ -31,8 +31,11 @@ class BarChartView @JvmOverloads constructor(
             field = value
             calculateYTextValues()
             calculateBarXPositionsInfo()
+            calculateAllowedDrawingIndexForXTexts()
             invalidate()
         }
+
+    private val allowedIndexSet = mutableSetOf<Int>()
 
     private var xTextHeight = 0
     private var yTextWidth = 0
@@ -354,10 +357,30 @@ class BarChartView @JvmOverloads constructor(
 
     private fun drawXTexts(canvas: Canvas) {
         val isCollide = checkXPositionsTextIsCollide()
-        val size = barDataList?.size ?: 0
         barDataList?.map { it.text }?.forEachIndexed { index, text ->
-            if (!isCollide || index == 0 || index == size - 1 || index == size / 2)
+            if (!isCollide || allowedIndexSet.contains(index))
                 canvas.drawText(text, barPositionX[index], height.toFloat(), textPaint)
+        }
+    }
+
+    private fun calculateAllowedDrawingIndexForXTexts() {
+        val size = barDataList?.size ?: 0
+        allowedIndexSet.clear()
+
+        val first = 0
+        val last = size - 1
+        val half = if (size % 2 == 0) size / 2 - 1 else size / 2
+        val quarter = size / 4
+        if (size > 10) {
+            allowedIndexSet.add(first)
+            allowedIndexSet.add(first + quarter)
+            allowedIndexSet.add(half)
+            allowedIndexSet.add(half + quarter)
+            allowedIndexSet.add(last)
+        } else {
+            allowedIndexSet.add(first)
+            allowedIndexSet.add(half)
+            allowedIndexSet.add(last)
         }
     }
 
