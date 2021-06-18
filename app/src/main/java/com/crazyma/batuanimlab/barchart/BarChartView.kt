@@ -184,7 +184,6 @@ class BarChartView @JvmOverloads constructor(
 
     private fun handleTouch(event: MotionEvent) {
         val x = event.x
-        val y = event.y
 
         var distance = Float.MAX_VALUE
         barPositionX.forEachIndexed { index, barX ->
@@ -414,8 +413,8 @@ class BarChartView @JvmOverloads constructor(
         if (barDataList.isNullOrEmpty()) return
 
         val bounds = Rect()
-        var textWidth = 0
-        var textHeight = 0
+        var textWidth: Int
+        var textHeight: Int
 
         yTextValues.map {
             getDisplayValueString(it)
