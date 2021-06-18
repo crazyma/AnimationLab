@@ -151,6 +151,7 @@ class BarChartView @JvmOverloads constructor(
             }
 
             MotionEvent.ACTION_DOWN -> {
+                disallowIntercept(true)
                 handleTouch(event)
                 populateThumbInfo()
                 moveThumb()
@@ -158,12 +159,14 @@ class BarChartView @JvmOverloads constructor(
             }
 
             MotionEvent.ACTION_UP -> {
+                disallowIntercept(false)
                 updatePivotLineInfo(null)
                 hideThumb()
                 true
             }
 
             MotionEvent.ACTION_CANCEL -> {
+                disallowIntercept(false)
                 updatePivotLineInfo(null)
                 invalidate()
                 hideThumb()
@@ -180,6 +183,10 @@ class BarChartView @JvmOverloads constructor(
         thumbBinding = LayoutThumbViewBinding.inflate(LayoutInflater.from(context), this, false)
         this.addView(thumbBinding.root)
         thumbBinding.root.isInvisible = true
+    }
+
+    private fun disallowIntercept(disallow: Boolean) {
+        parent.requestDisallowInterceptTouchEvent(disallow)
     }
 
     private fun handleTouch(event: MotionEvent) {
