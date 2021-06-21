@@ -21,6 +21,7 @@ class BarChartActivity : AppCompatActivity() {
         Handler().postDelayed({
             val list = getData(6)
             binding.barChartView.barDataList = list
+            binding.barChartView.displayCount = 7
         }, 1000)
     }
 

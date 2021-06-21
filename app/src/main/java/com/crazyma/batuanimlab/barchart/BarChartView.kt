@@ -35,6 +35,23 @@ class BarChartView @JvmOverloads constructor(
             invalidate()
         }
 
+    var displayCount: Int = -1
+        set(value) {
+            field = value
+            calculateYTextValues()
+            calculateBarXPositionsInfo()
+            calculateAllowedDrawingIndexForXTexts()
+            invalidate()
+        }
+        get() {
+            val dataCount = barDataList?.size ?: 0
+            return if (field < 0 || field > dataCount) {
+                dataCount
+            } else {
+                field
+            }
+        }
+
     private val allowedIndexSet = mutableSetOf<Int>()
 
     private var xTextHeight = 0
@@ -223,7 +240,7 @@ class BarChartView @JvmOverloads constructor(
     }
 
     private fun calculateBarXPositionsInfo() {
-        val barCount = barDataList?.size ?: return
+        val barCount = displayCount
 
         val minusWidth = density * 4
         barWidth = density * 24
@@ -253,7 +270,7 @@ class BarChartView @JvmOverloads constructor(
     }
 
     private fun calculateYTextValues() {
-        val rawValues = barDataList?.map { it.value.toDouble() } ?: return
+        val rawValues = barDataList?.take(displayCount)?.map { it.value.toDouble() } ?: return
 
         val chartLinearScale = ChartLinearScale()
 
@@ -284,8 +301,6 @@ class BarChartView @JvmOverloads constructor(
 
     private fun drawBars(canvas: Canvas) {
         if (barDataList.isNullOrEmpty() || yTextValues.isEmpty() || barPositionX.isEmpty()) return
-        if (barDataList?.size != barPositionX.size)
-            throw java.lang.RuntimeException("The data count of `barDataList` & `barPosition` are NOT the same")
 
         val barPositionTop = linePositionY.first()
         val barPositionBottom = linePositionY.last()
@@ -363,14 +378,14 @@ class BarChartView @JvmOverloads constructor(
 
     private fun drawXTexts(canvas: Canvas) {
         val isCollide = checkXPositionsTextIsCollide()
-        barDataList?.map { it.text }?.forEachIndexed { index, text ->
+        barDataList?.take(displayCount)?.map { it.text }?.forEachIndexed { index, text ->
             if (!isCollide || allowedIndexSet.contains(index))
                 canvas.drawText(text, barPositionX[index], height.toFloat(), textPaint)
         }
     }
 
     private fun calculateAllowedDrawingIndexForXTexts() {
-        val size = barDataList?.size ?: 0
+        val size = displayCount
         allowedIndexSet.clear()
 
         val first = 0
@@ -391,7 +406,7 @@ class BarChartView @JvmOverloads constructor(
     }
 
     private fun checkXPositionsTextIsCollide(): Boolean {
-        val size = barDataList?.size ?: return false
+        val size = displayCount
         if (size <= 1) return false
 
         fun String.getWidthInCanvas(bounds: Rect): Float {
