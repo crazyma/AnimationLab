@@ -52,6 +52,8 @@ class BarChartView @JvmOverloads constructor(
             }
         }
 
+    var thumbInfoTitle: String = ""
+
     private val allowedIndexSet = mutableSetOf<Int>()
 
     private var xTextHeight = 0
@@ -343,6 +345,7 @@ class BarChartView @JvmOverloads constructor(
         val closestBarXIndex = closestBarXIndex ?: return
 
         barDataList?.get(closestBarXIndex)?.let { barData ->
+            thumbBinding.infoTitleTextView.text = thumbInfoTitle
             thumbBinding.dateTextView.text = barData.text
             thumbBinding.infoNumberTextView.text = barData.value.toString()
         }
