@@ -3,6 +3,9 @@ package com.crazyma.batuanimlab.barchart
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -163,7 +166,7 @@ class BarChartView @JvmOverloads constructor(
         return when (event?.action) {
 
             MotionEvent.ACTION_MOVE -> {
-                handleTouch(event)
+                updatePivotLineInfo(calculateClosedIndex(event))
                 populateThumbInfo()
                 moveThumb()
                 true
@@ -171,7 +174,7 @@ class BarChartView @JvmOverloads constructor(
 
             MotionEvent.ACTION_DOWN -> {
                 disallowIntercept(true)
-                handleTouch(event)
+                updatePivotLineInfo(calculateClosedIndex(event))
                 populateThumbInfo()
                 moveThumb()
                 true
@@ -208,23 +211,44 @@ class BarChartView @JvmOverloads constructor(
         parent.requestDisallowInterceptTouchEvent(disallow)
     }
 
-    private fun handleTouch(event: MotionEvent) {
+    private fun calculateClosedIndex(event: MotionEvent): Int {
         val x = event.x
+        var closedIndex = 0
 
         var distance = Float.MAX_VALUE
-        barPositionX.forEachIndexed { index, barX ->
-            (barX - x).absoluteValue.let {
-                if (it < distance) {
-                    distance = it
-                    updatePivotLineInfo(index)
+        run loop@{
+            barPositionX.forEachIndexed { index, barX ->
+                (barX - x).absoluteValue.let {
+                    if (it < distance) {
+                        distance = it
+                        closedIndex = index
+                    } else {
+                        return@loop
+                    }
                 }
             }
         }
+        return closedIndex
     }
 
     private fun updatePivotLineInfo(index: Int?) {
+        if (closestBarXIndex != index) {
+            vibrate()
+        }
         closestBarXIndex = index
         invalidate()
+    }
+
+    private fun vibrate() {
+        (context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator)?.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                it.vibrate(VibrationEffect.createOneShot(40, 128))
+            } else {
+                @Suppress("DEPRECATION")
+                it.vibrate(40)
+            }
+        }
+
     }
 
     private fun calculateYTextWidth() {
